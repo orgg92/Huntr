@@ -1,9 +1,11 @@
-﻿// Borrowed this from giuliocomi @ github: https://github.com/giuliocomi/arp-scanner
+﻿// Some code borrowed and refactored from giuliocomi @ github: https://github.com/giuliocomi/arp-scanner
 
+using ArpLookup;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -29,20 +31,10 @@ namespace Radar.Common
 
         public static Host Scan(string ipAddress)
         {
-            int timeout = 4000;
+            int timeout = 2000;
             Host host = new Host();
             macList = LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/MacList.txt");
-
-            //FormatOutput("Starting ARP scan", ConsoleColor.Cyan);
             host = CheckStatus(ipAddress, timeout);
-            //Console.WriteLine(String.Format("{0,-20} | {1,-20} | {2,-20}", "IP", "MAC", "InterfaceDetails"));
-            if (host.IP is not null)
-            {
-                //
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(String.Format("{0,-20} | {1,-20} | {2,-20}", host.IP, host.MAC, host.Vendor));
-                Console.ResetColor();
-            }
 
             return host;
 
@@ -54,22 +46,33 @@ namespace Radar.Common
             return macString.ToUpper();
         }
 
-        private static void ThreadedARPRequest(string ipString, ref Host result)
+        private static Host LookupMAC(string ipString, Host result)
         {
             byte[] macAddr = new byte[6];
 
             var ipAddress = IPAddress.Parse(ipString);
-            SendARP((int)BitConverter.ToInt32(ipAddress.GetAddressBytes(), 0), 0, macAddr, ref macAddrLen);
-            if (MacAddresstoString(macAddr) != "00-00-00-00-00-00")
+
+            PhysicalAddress mac = Arp.Lookup(IPAddress.Parse(ipString));
+
+            if (mac is not null)
             {
-                string macString = MacAddresstoString(macAddr);
-                result = new Host() 
+                var paddedMAC = PadMACString(mac?.ToString());
+
+                result = new Host()
                 {
-                    IP = ipString, 
-                    MAC = macString,
-                    Vendor = GetDeviceInfoFromMac(macString)
+                    IP = ipString,
+                    MAC = paddedMAC,
+                    Vendor = GetDeviceInfoFromMac(paddedMAC)
                 };
             }
+
+            return result;
+        }
+
+        private static string PadMACString(string mac)
+        {
+            var formattedMAC = Regex.Replace(mac, ".{2}", "$0-");
+            return formattedMAC.Substring(0, formattedMAC.Length - 1);
         }
 
         private static string GetDeviceInfoFromMac(string mac)
@@ -89,7 +92,7 @@ namespace Radar.Common
             }
             catch (Exception e)
             {
-                FormatOutput(e.ToString(), ConsoleColor.Red); 
+                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red); 
             }
             return "Unknown";
         }
@@ -101,15 +104,13 @@ namespace Radar.Common
 
             try
             {
-                    Thread threadARP = new Thread(() => ThreadedARPRequest(ipAddress, ref result));
-                    threadARP.Start();
+                result = LookupMAC(ipAddress, result);
             }
             catch (Exception e)
             {
-                FormatOutput(e.ToString(), ConsoleColor.Red); 
+                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red); 
             }
 
-            Thread.Sleep(timeout);
             return result;
         }
 
@@ -124,19 +125,12 @@ namespace Radar.Common
             }
             catch (Exception e)
             {
-                FormatOutput("Error reading file.", ConsoleColor.Red);
+                ConsoleTools.WriteToConsole("Error reading file.", ConsoleColor.Red);
 
                 return new List<string>();
             }
             return list;
         }
 
-
-        private static void FormatOutput(string message, System.ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(message);
-            Console.ResetColor();
-        }
     }
 }

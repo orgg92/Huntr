@@ -15,12 +15,14 @@ internal class Program
             //.AddLogging()
             .AddSingleton<IIPManipulationService, IPManipulationService>()
             .AddSingleton<INetworkScanner, NetworkScanner>()
+            .AddSingleton<IHostToolsService, HostToolsService>()
             .BuildServiceProvider();
 
         var ipService = serviceProvider.GetService<IIPManipulationService>();
         var networkService = serviceProvider.GetService<INetworkScanner>();
+        var toolsService = serviceProvider.GetService<IHostToolsService>();
 
-        var radar = new RadarScanner(ipService, networkService);
+        var radar = new RadarScanner(ipService, networkService, toolsService);
         await radar.StartScan();
     }
 

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Radar
+namespace Radar.Common
 {
     public class Subnet
     {
@@ -95,7 +95,7 @@ namespace Radar
             {
                 Subnets.Add(new Subnet()
                 {
-                    NetworkBits = i+1,
+                    NetworkBits = i + 1,
                     SubnetMask = SubnetMaskList[i],
                     NumberOfHosts = HostNumbers[i]
                 });
@@ -105,7 +105,7 @@ namespace Radar
 
         public Subnet ReturnSubnetInfo(string subnetMask)
         {
-            return this.Subnets.Where(x => x.SubnetMask == subnetMask).First();
+            return Subnets.Where(x => x.SubnetMask == subnetMask).First();
         }
     }
 }

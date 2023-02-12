@@ -95,10 +95,11 @@ namespace Radar.Services
             }
         }
 
-        public bool ScanInterfaces(string userInput)
+        public IEnumerable<Host> ScanInterfaces(string userInput)
         {
             WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
             var iface = ifaces[int.Parse(userInput)-1];
+
             try
             {
 
@@ -119,10 +120,10 @@ namespace Radar.Services
 
             }
 
-            return true;
+            return ActiveHosts;
         }
 
-        public void ScanNetwork(IPAddress ipAddress, string subnetMask) // host IP and subnet
+        public IEnumerable<Host> ScanNetwork(IPAddress ipAddress, string subnetMask) // host IP and subnet
         {
             // white list the IP of this host so we don't scan it
             hostIP = ipAddress.ToString();
@@ -130,19 +131,19 @@ namespace Radar.Services
             var foundHosts = new List<string>();
 
             // Calculate number of hosts from subnet mask
-
-            
             var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
 
             var segment = new IPSegment(ipAddress.ToString(), subnet.SubnetMask);
-            Console.WriteLine(segment.NetworkAddress.ToString(), segment.BroadcastAddress);
+            //Console.WriteLine(segment.NetworkAddress.ToString(), segment.BroadcastAddress);
 
             // Calculate first IP to scan based on input IP
-            lastHost = segment.Hosts().Last().ToIpString();
             firstHost = segment.Hosts().First().ToIpString();
+            lastHost = segment.Hosts().Last().ToIpString();
             var targetIp = firstHost;
 
             //// Loop through and scan
+
+            Host host;
 
             for (int i = 0; i < subnet.NumberOfHosts; i++)
             {
@@ -154,24 +155,25 @@ namespace Radar.Services
                 if (result == IPStatus.Success)
                 {
                     foundHosts.Add(targetIp);
-                    Console.WriteLine($"Found new host: {targetIp}");
-
-                   var host = ArpScan.Scan(targetIp);
+                    WriteToConsole($"Found new host: {targetIp}", ConsoleColor.Green);
                 }
-                else
+
+                // Scan host to get MAC address
+                host = ArpScan.Scan(targetIp);
+
+                // All properties are null if ARP scan fails
+                if (host.IP is not null)
                 {
-                   var host = ArpScan.Scan(targetIp);
+                    WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
+                    ActiveHosts.Add(host);
                 }
 
                 targetIp = IncrementIpAddress(targetIp);
             }
 
-            Console.WriteLine($"Found {foundHosts.Count()} hosts...");
+            WriteToConsole($"Found {foundHosts.Count()} hosts...", ConsoleColor.Yellow);
 
-            foreach(var host in foundHosts)
-            {
-                Console.WriteLine(host);
-            }
+            return ActiveHosts;
 
         }
 
@@ -212,7 +214,9 @@ namespace Radar.Services
 
         private static void WriteToConsole(string msg, ConsoleColor color)
         {
-            Console.WriteLine(msg, ConsoleColor.Blue);
+            Console.ForegroundColor = color;
+            Console.WriteLine(msg);
+            Console.ResetColor();
         }
     }
 }
