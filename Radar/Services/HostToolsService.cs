@@ -42,8 +42,8 @@ namespace Radar.Services
 
                 switch (input)
                 {
-                    case 1:
-                        this.Flooder.GenerateTraffic();
+                    case 0:
+                        this.Flooder.GenerateTraffic(targetHost);
                         break;
                 }
             }
