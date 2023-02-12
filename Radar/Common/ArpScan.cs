@@ -38,6 +38,7 @@ namespace Radar.Common
             //Console.WriteLine(String.Format("{0,-20} | {1,-20} | {2,-20}", "IP", "MAC", "InterfaceDetails"));
             if (host.IP is not null)
             {
+                //
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(String.Format("{0,-20} | {1,-20} | {2,-20}", host.IP, host.MAC, host.Vendor));
                 Console.ResetColor();
@@ -62,7 +63,8 @@ namespace Radar.Common
             if (MacAddresstoString(macAddr) != "00-00-00-00-00-00")
             {
                 string macString = MacAddresstoString(macAddr);
-                result = new Host() {
+                result = new Host() 
+                {
                     IP = ipString, 
                     MAC = macString,
                     Vendor = GetDeviceInfoFromMac(macString)
@@ -87,7 +89,7 @@ namespace Radar.Common
             }
             catch (Exception e)
             {
-                FormatOutput(e.ToString(), ConsoleColor.Red);   //TODO
+                FormatOutput(e.ToString(), ConsoleColor.Red); 
             }
             return "Unknown";
         }
@@ -104,7 +106,7 @@ namespace Radar.Common
             }
             catch (Exception e)
             {
-                FormatOutput(e.ToString(), ConsoleColor.Red);   //TODO
+                FormatOutput(e.ToString(), ConsoleColor.Red); 
             }
 
             Thread.Sleep(timeout);

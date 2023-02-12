@@ -16,11 +16,6 @@ namespace Radar.Services
 
     public class NetworkScanner : INetworkScanner
     {
-
-        [DllImport("iphlpapi.dll", ExactSpelling = true)]
-        public static extern int SendARP(int DestIP, int SrcIP,
-                                 byte[] pMacAddr, ref uint PhyAddrLen);
-
         private const string spacer = "***********************************************************";
 
         private string foundInterfacesMsg = "Found {0} interfaces...",
@@ -45,7 +40,6 @@ namespace Radar.Services
         private string input = String.Empty;
 
         private byte[] macAddr = new byte[6];
-        private uint macAddrLen;
 
         private readonly IIPManipulationService _iPManipulationService;
 
@@ -162,16 +156,12 @@ namespace Radar.Services
                     foundHosts.Add(targetIp);
                     Console.WriteLine($"Found new host: {targetIp}");
 
-                    ArpScan.Scan(targetIp);
+                   var host = ArpScan.Scan(targetIp);
                 }
                 else
                 {
-                    // Use other means to determine if host is alive - aka arping
-
-                    ArpScan.Scan(targetIp);
+                   var host = ArpScan.Scan(targetIp);
                 }
-
-
 
                 targetIp = IncrementIpAddress(targetIp);
             }

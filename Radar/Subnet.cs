@@ -11,8 +11,6 @@ namespace Radar
         public int NetworkBits { get; set; }
         public string SubnetMask { get; set; }
         public int NumberOfHosts { get; set; }
-        public int FirstHost { get; set; }
-        public int LastHost { get; set; }
 
     }
 
@@ -99,9 +97,7 @@ namespace Radar
                 {
                     NetworkBits = i+1,
                     SubnetMask = SubnetMaskList[i],
-                    NumberOfHosts = HostNumbers[i], 
-                    FirstHost = HostNumbers[i]/256,
-                    LastHost = HostNumbers[i]/256
+                    NumberOfHosts = HostNumbers[i]
                 });
             }
 
