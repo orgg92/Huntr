@@ -1,6 +1,6 @@
 ﻿using System.Net;
 
-namespace Radar.Services
+namespace Radar.Services.Interfaces
 {
     public interface IIPManipulationService
     {

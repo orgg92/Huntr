@@ -5,13 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Radar.Common
+namespace Radar.Common.NetworkModels
 {
     public class IPSegment
     {
 
-        private UInt32 _ip;
-        private UInt32 _mask;
+        private uint _ip;
+        private uint _mask;
 
         public IPSegment(string ip, string mask)
         {
@@ -19,22 +19,22 @@ namespace Radar.Common
             _mask = mask.ParseIp();
         }
 
-        public UInt32 NumberOfHosts
+        public uint NumberOfHosts
         {
             get { return ~_mask + 1; }
         }
 
-        public UInt32 NetworkAddress
+        public uint NetworkAddress
         {
             get { return _ip & _mask; }
         }
 
-        public UInt32 BroadcastAddress
+        public uint BroadcastAddress
         {
             get { return NetworkAddress + ~_mask; }
         }
 
-        public IEnumerable<UInt32> Hosts()
+        public IEnumerable<uint> Hosts()
         {
             for (var host = NetworkAddress + 1; host < BroadcastAddress; host++)
             {
@@ -46,26 +46,26 @@ namespace Radar.Common
 
     public static class IpHelpers
     {
-        public static string ToIpString(this UInt32 value)
+        public static string ToIpString(this uint value)
         {
             var bitmask = 0xff000000;
             var parts = new string[4];
             for (var i = 0; i < 4; i++)
             {
-                var masked = (value & bitmask) >> ((3 - i) * 8);
+                var masked = (value & bitmask) >> (3 - i) * 8;
                 bitmask >>= 8;
                 parts[i] = masked.ToString(CultureInfo.InvariantCulture);
             }
-            return String.Join(".", parts);
+            return string.Join(".", parts);
         }
 
-        public static UInt32 ParseIp(this string ipAddress)
+        public static uint ParseIp(this string ipAddress)
         {
             var splitted = ipAddress.Split('.');
-            UInt32 ip = 0;
+            uint ip = 0;
             for (var i = 0; i < 4; i++)
             {
-                ip = (ip << 8) + UInt32.Parse(splitted[i]);
+                ip = (ip << 8) + uint.Parse(splitted[i]);
             }
             return ip;
         }

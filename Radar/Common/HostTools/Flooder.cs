@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
+using Radar.Common.NetworkModels;
 
 namespace Radar.Common.HostTools
 {
@@ -32,7 +33,7 @@ namespace Radar.Common.HostTools
 
             while (DateTime.UtcNow - startTime < TimeSpan.FromMinutes(5))
             {
-                    Task.Run(async () => await PingHost(targetHost));
+                    Task.Run( () => PingHost(targetHost));
             }
 
         }
@@ -42,7 +43,7 @@ namespace Radar.Common.HostTools
             
         }
 
-        private async static Task PingHost(Host targetHost)
+        private static void PingHost(Host targetHost)
         {
 
 

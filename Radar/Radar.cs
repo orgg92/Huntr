@@ -6,9 +6,9 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net.Sockets;
-using Radar.Services;
 using Radar.Common.HostTools;
-using Radar.Common;
+using Radar.Services.Interfaces;
+using Radar.Common.NetworkModels;
 
 namespace Radar
 {
@@ -34,10 +34,10 @@ namespace Radar
 
             var hosts = Enumerable.Empty<Host>();
 
-            if (input == "Y")
+            if (input.ToLower() == "Y".ToLower())
             {
                 var iface = _networkScanner.FindInterfaces();   
-                hosts = _networkScanner.ScanInterfaces(iface);
+                hosts = _networkScanner.StartScan(iface);
             }
 
             _hostToolsService.ChooseService(hosts);

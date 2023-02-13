@@ -1,6 +1,6 @@
-﻿using Radar.Common;
+﻿using Radar.Common.NetworkModels;
 
-namespace Radar.Services
+namespace Radar.Services.Interfaces
 {
     public interface IHostToolsService
     {

@@ -9,6 +9,10 @@ using System.Net.Sockets;
 using System.Reflection.Metadata.Ecma335;
 using Radar.Common;
 using System.Runtime.InteropServices;
+using System.Diagnostics;
+using Radar.Services.Interfaces;
+using Radar.Common.Util;
+using Radar.Common.NetworkModels;
 
 namespace Radar.Services
 {
@@ -34,6 +38,9 @@ namespace Radar.Services
         private UnicastIPAddressInformationCollection ipAddresses;
         private IPAddress ipAddress;
         private string subnetMask;
+        private string targetIp;
+
+        private HostTracker hostTracker;
 
         private List<Host> ActiveHosts = new List<Host>();
 
@@ -49,6 +56,8 @@ namespace Radar.Services
             _iPManipulationService = iPManipulationService;
 
             ifaces = NetworkInterface.GetAllNetworkInterfaces();
+            hostTracker = new HostTracker();
+
         }
 
         public string FindInterfaces()
@@ -86,25 +95,36 @@ namespace Radar.Services
 
                 var input = Console.ReadLine();
 
+                var hosts = new Host[120000];
+
                 return input;
 
-            }
-            catch (Exception e)
+            } catch (Exception e)
             {
                 return e.Message;
             }
         }
 
-        public IEnumerable<Host> ScanInterfaces(string userInput)
+        public IEnumerable<Host> StartScan(string userInput)
         {
             WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
-            var iface = ifaces[int.Parse(userInput)-1];
+
+            var subnetMask = ScanInterfaces(userInput);
+
+            var hosts = ScanNetwork(ipAddress, subnetMask.ToString());
+
+            return ActiveHosts.Select(x => x).Distinct().ToArray();
+        }
+
+        public string ScanInterfaces(string userInput)
+        {
+            var iface = ifaces[int.Parse(userInput) - 1];
 
             try
             {
 
                 ipAddresses = iface.GetIPProperties().UnicastAddresses;
-                var subnetMaskTest = ipAddresses.Where(x => x.IPv4Mask.ToString() != "0.0.0.0").Select(x => x.IPv4Mask).First();
+                var subnetMask = ipAddresses.Where(x => x.IPv4Mask.ToString() != "0.0.0.0").Select(x => x.IPv4Mask).First();
 
                 ipAddress = ipAddresses
                             .Select(x => x)
@@ -112,15 +132,14 @@ namespace Radar.Services
                             .Select(i => i.Address)
                             .First();
 
-                WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMaskTest} ", ConsoleColor.Red);
+                WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
 
-                ScanNetwork(ipAddress, subnetMaskTest.ToString());
-            } catch (Exception e)
-            {
-
+                return subnetMask.ToString();
             }
-
-            return ActiveHosts;
+            catch (Exception e)
+            {
+                return e.Message;
+            }
         }
 
         public IEnumerable<Host> ScanNetwork(IPAddress ipAddress, string subnetMask) // host IP and subnet
@@ -128,52 +147,64 @@ namespace Radar.Services
             // white list the IP of this host so we don't scan it
             hostIP = ipAddress.ToString();
 
-            var foundHosts = new List<string>();
-
             // Calculate number of hosts from subnet mask
             var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
 
             var segment = new IPSegment(ipAddress.ToString(), subnet.SubnetMask);
-            //Console.WriteLine(segment.NetworkAddress.ToString(), segment.BroadcastAddress);
 
             // Calculate first IP to scan based on input IP
             firstHost = segment.Hosts().First().ToIpString();
             lastHost = segment.Hosts().Last().ToIpString();
-            var targetIp = firstHost;
+            targetIp = firstHost;
 
-            //// Loop through and scan
+            var threadList = new List<Thread>();
 
-            Host host;
+            // Calculate number of threads and half 
+            var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
-            for (int i = 0; i < subnet.NumberOfHosts; i++)
+            numberOfThreads = 5;
+
+            for (int i = 0; i < subnet.NumberOfHosts; i = i+numberOfThreads)
             {
+                // Make host scanning quicker by multithreading
+                for (int t = 0; t < numberOfThreads; t++)
+                {
+
+                    if (targetIp != lastHost)
+                    {
+                        threadList.Add(new Thread(() => ThreadedPingRequest(targetIp, t)));
+                        threadList[t].Start();
+                        Thread.Sleep(500);
+                    }
+                }
+
+                threadList.WaitAll();
+
+                threadList.Clear();
+            }
+
+            WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
+            
+            return ActiveHosts;
+
+        }
+
+        public void ThreadedPingRequest(string targetIp, int t)
+        {
+            try
+            {
+                var targetIpSplit = targetIp.Split(".");
+
+                targetIpSplit[3] = (int.Parse(targetIpSplit[3]) + t).ToString();
+                targetIp = string.Join(".", targetIpSplit);
 
                 WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
                 var result = PingHost(IPAddress.Parse(targetIp));
+            } catch (System.FormatException)
+            {
 
-                if (result == IPStatus.Success)
-                {
-                    foundHosts.Add(targetIp);
-                    WriteToConsole($"Found new host: {targetIp}", ConsoleColor.Green);
-                }
-
-                // Scan host to get MAC address
-                host = ArpScan.Scan(targetIp);
-
-                // All properties are null if ARP scan fails
-                if (host.IP is not null)
-                {
-                    WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
-                    ActiveHosts.Add(host);
-                }
-
-                targetIp = IncrementIpAddress(targetIp);
             }
-
-            WriteToConsole($"Found {foundHosts.Count()} hosts...", ConsoleColor.Yellow);
-
-            return ActiveHosts;
 
         }
 
@@ -201,15 +232,48 @@ namespace Radar.Services
             return String.Join(".",ipSplit);
         }
 
-        public IPStatus PingHost(IPAddress targetIp)
+        public bool PingHost(IPAddress targetIp)
         {
-            // Scan network on interface
-            var ping = new Ping();
+            try
+            {
+                var foundHosts = new List<string>();
 
-            int timeout = 100;
-            var reply = ping.Send(targetIp, timeout);
+                Host host;
 
-            return reply.Status;
+                // Scan network on interface
+                var ping = new Ping();
+
+                int timeout = 100;
+                var reply = ping.Send(targetIp, timeout);
+
+                var result = reply.Status;
+
+                if (result == IPStatus.Success)
+                {
+                    foundHosts.Add(targetIp.ToString());
+                    WriteToConsole($"Found new host: {targetIp}", ConsoleColor.Green);
+                }
+
+                // Scan host to get MAC address
+                host = ArpScan.Scan(targetIp.ToString());
+
+                // All properties are null if ARP scan fails
+                if (host.IP is not null)
+                {
+                    WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
+                    ActiveHosts.Add(host);
+                    var h = this.hostTracker.hosts.Select(x => x.IP == host.IP);
+                    
+                }
+
+                this.targetIp = IncrementIpAddress(targetIp.ToString());
+
+                return true;
+            } catch (System.FormatException)
+            {
+                return false;
+            }
+
         }
 
         private static void WriteToConsole(string msg, ConsoleColor color)

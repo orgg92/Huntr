@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Radar.Common
+namespace Radar.Common.NetworkModels
 {
     public class Subnet
     {

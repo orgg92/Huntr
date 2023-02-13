@@ -1,6 +1,8 @@
 ﻿// Some code borrowed and refactored from giuliocomi @ github: https://github.com/giuliocomi/arp-scanner
 
 using ArpLookup;
+using Radar.Common.NetworkModels;
+using Radar.Common.Util;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,7 +35,7 @@ namespace Radar.Common
         {
             int timeout = 2000;
             Host host = new Host();
-            macList = LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/MacList.txt");
+            macList = LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/MacList.txt");
             host = CheckStatus(ipAddress, timeout);
 
             return host;
