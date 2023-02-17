@@ -24,7 +24,7 @@ internal class Program
         var toolsService = serviceProvider.GetService<IHostToolsService>();
 
         var radar = new RadarScanner(ipService, networkService, toolsService);
-        await radar.StartScan();
+        radar.StartApp();
     }
 
 

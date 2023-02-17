@@ -17,43 +17,56 @@ namespace Radar
         private readonly INetworkScanner _networkScanner;
         private readonly IHostToolsService _hostToolsService;
         private HostTools HostTools { get; set; }
+        private IEnumerable<Host> Hosts;
 
+        public string[] CommandOptions = new string[] { "Network Scan", "DHCP Finder", "DNS Finder" };
+        public const string FeatureSelection = "Select one of the following options...";
 
         public RadarScanner(IIPManipulationService iPManipulationService, INetworkScanner networkScanner, IHostToolsService hostToolsService)
         {
             _networkScanner = networkScanner;
-            HostTools = new HostTools();
             _hostToolsService = hostToolsService;
+            HostTools = new HostTools();
         }
 
-        public async Task StartScan()
+        public void StartApp()
         {
-            Console.WriteLine("Run network scan? [Y/N]");
-            var input = Console.ReadLine();
+            //Console.WriteLine(FeatureSelection);
 
+            //for (int i = 0; i < CommandOptions.Length; i++)
+            //{
+            //    Console.WriteLine($"({i + 1}) {CommandOptions[i]}");
+            //}
 
-            var hosts = Enumerable.Empty<Host>();
+            //var input = Console.ReadLine();
+            //switch (int.Parse(input))
+            //{
+            //    case 1:
+                    StartScan();
+            //        break;
+            //    case 2:
+            //        // Find DHCP
+            //        break;
+            //    case 3:
+            //        // Find DNS
+            //        break;
+            //}
 
-            if (input.ToLower() == "Y".ToLower())
-            {
-                var iface = _networkScanner.FindInterfaces();   
-                hosts = _networkScanner.StartScan(iface);
-            }
+            _hostToolsService.ChooseService(Hosts);
+        }
 
-            _hostToolsService.ChooseService(hosts);
+        public void StartScan()
+        {
+            Hosts = Enumerable.Empty<Host>();
 
-            
-
-
-
+            var iface = _networkScanner.FindInterfaces();
+            Hosts = _networkScanner.StartScan(iface);
         }
 
         private static void SaveToLogFile()
         {
 
         }
-
-
     }
-
 }
+
