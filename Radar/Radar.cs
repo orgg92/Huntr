@@ -31,27 +31,7 @@ namespace Radar
 
         public void StartApp()
         {
-            //Console.WriteLine(FeatureSelection);
-
-            //for (int i = 0; i < CommandOptions.Length; i++)
-            //{
-            //    Console.WriteLine($"({i + 1}) {CommandOptions[i]}");
-            //}
-
-            //var input = Console.ReadLine();
-            //switch (int.Parse(input))
-            //{
-            //    case 1:
-                    StartScan();
-            //        break;
-            //    case 2:
-            //        // Find DHCP
-            //        break;
-            //    case 3:
-            //        // Find DNS
-            //        break;
-            //}
-
+            StartScan();
             _hostToolsService.ChooseService(Hosts);
         }
 

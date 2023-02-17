@@ -133,7 +133,6 @@ namespace Radar.Services
                             .Select(i => i.Address)
                             .First();
 
-                //WriteToConsole($"DHCP Server: {iface.GetIPProperties().DnsAddresses[0]} / {iface.GetIPProperties().DnsAddresses[1]}", ConsoleColor.Red);
                 WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
 
                 return subnetMask.ToString();
@@ -146,9 +145,6 @@ namespace Radar.Services
 
         public IEnumerable<Host> ScanNetwork(IPAddress ipAddress, string subnetMask) // host IP and subnet
         {
-            // white list the IP of this host so we don't scan it
-            hostIP = ipAddress.ToString();
-
             // Calculate number of hosts from subnet mask
             var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
 
