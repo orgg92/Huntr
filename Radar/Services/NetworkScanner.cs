@@ -43,6 +43,7 @@ namespace Radar.Services
         private HostTracker hostTracker;
 
         private List<Host> ActiveHosts = new List<Host>();
+        private List<AbstractHost> hostList = new List<AbstractHost>();
 
         private string input = String.Empty;
 
@@ -132,6 +133,7 @@ namespace Radar.Services
                             .Select(i => i.Address)
                             .First();
 
+                //WriteToConsole($"DHCP Server: {iface.GetIPProperties().DnsAddresses[0]} / {iface.GetIPProperties().DnsAddresses[1]}", ConsoleColor.Red);
                 WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
 
                 return subnetMask.ToString();
@@ -157,26 +159,35 @@ namespace Radar.Services
             lastHost = segment.Hosts().Last().ToIpString();
             targetIp = firstHost;
 
+            // Create list of threads 
             var threadList = new List<Thread>();
 
-            // Calculate number of threads and half 
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
-            numberOfThreads = 5;
-
-            for (int i = 0; i < subnet.NumberOfHosts; i = i+numberOfThreads)
+            // inefficient but without this list, the multithreading process can skip hosts 
+            for (int i = 0; i < subnet.NumberOfHosts; i++)
             {
-                // Make host scanning quicker by multithreading
+                hostList.Add(new AbstractHost { IP = targetIp });
+                this.targetIp = IncrementIpAddress(targetIp.ToString());
+            }
+
+            for (int i = 0; i < subnet.NumberOfHosts; i = i++)
+            {
+
+                // Make host scanning quicker by multithreading 
                 for (int t = 0; t < numberOfThreads; t++)
                 {
 
                     if (targetIp != lastHost)
                     {
-                        threadList.Add(new Thread(() => ThreadedPingRequest(targetIp, t)));
+                        threadList.Add(new Thread(() => ThreadedPingRequest()));
                         threadList[t].Start();
-                        Thread.Sleep(500);
+                        Thread.Sleep(150);
                     }
                 }
+
+                // Increment by number of threads 
+                i=i+numberOfThreads;
 
                 threadList.WaitAll();
 
@@ -189,19 +200,21 @@ namespace Radar.Services
 
         }
 
-        public void ThreadedPingRequest(string targetIp, int t)
+        public void ThreadedPingRequest()
         {
             try
             {
-                var targetIpSplit = targetIp.Split(".");
+                if (hostList.Any(x => x.PingAttempted is false))
+                {
+                    var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
+                    targetIp = targetHost.IP.ToString();
+                    hostList.Remove(targetHost);
+                    WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
-                targetIpSplit[3] = (int.Parse(targetIpSplit[3]) + t).ToString();
-                targetIp = string.Join(".", targetIpSplit);
-
-                WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
-
-                var result = PingHost(IPAddress.Parse(targetIp));
-            } catch (System.FormatException)
+                    var result = PingHost(IPAddress.Parse(targetIp));
+                }         
+            }
+            catch (System.FormatException)
             {
 
             }
@@ -221,8 +234,7 @@ namespace Radar.Services
                 if (ipSplit[i] == "256")
                 {
                     if (i > 1)
-                    {
-                        Console.WriteLine((int.Parse(ipSplit[i - 1]) + 1).ToString());
+                    { 
                         ipSplit[i - 1] = (int.Parse(ipSplit[i - 1]) + 1).ToString();
                         ipSplit[i] = "0";
                     }
@@ -240,7 +252,6 @@ namespace Radar.Services
 
                 Host host;
 
-                // Scan network on interface
                 var ping = new Ping();
 
                 int timeout = 100;
@@ -251,7 +262,6 @@ namespace Radar.Services
                 if (result == IPStatus.Success)
                 {
                     foundHosts.Add(targetIp.ToString());
-                    WriteToConsole($"Found new host: {targetIp}", ConsoleColor.Green);
                 }
 
                 // Scan host to get MAC address
@@ -262,11 +272,7 @@ namespace Radar.Services
                 {
                     WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
                     ActiveHosts.Add(host);
-                    var h = this.hostTracker.hosts.Select(x => x.IP == host.IP);
-                    
                 }
-
-                this.targetIp = IncrementIpAddress(targetIp.ToString());
 
                 return true;
             } catch (System.FormatException)
