@@ -43,6 +43,7 @@ namespace Radar.Services
         private HostTracker hostTracker;
 
         private List<Host> ActiveHosts = new List<Host>();
+        private List<AbstractHost> hostList = new List<AbstractHost>();
 
         private string input = String.Empty;
 
@@ -162,21 +163,36 @@ namespace Radar.Services
             // Calculate number of threads and half 
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
-            numberOfThreads = 5;
+            //var numberOfThreads = 5;
 
-            for (int i = 0; i < subnet.NumberOfHosts; i = i+numberOfThreads)
+
+            // inefficient but without this list, the multithreading process can skip hosts 
+            for (int i = 0; i < subnet.NumberOfHosts; i++)
             {
+                hostList.Add(new AbstractHost { IP = targetIp });
+                this.targetIp = IncrementIpAddress(targetIp.ToString());
+            }
+
+            for (int i = 0; i < subnet.NumberOfHosts; i = i++)
+            {
+
+
                 // Make host scanning quicker by multithreading
                 for (int t = 0; t < numberOfThreads; t++)
                 {
 
                     if (targetIp != lastHost)
                     {
-                        threadList.Add(new Thread(() => ThreadedPingRequest(targetIp, t)));
+                        threadList.Add(new Thread(() => ThreadedPingRequest(targetIp)));
                         threadList[t].Start();
-                        Thread.Sleep(500);
+                        Thread.Sleep(150);
+                    } else
+                    {
+                        ThreadedPingRequest(targetIp);
                     }
                 }
+
+                i=i+numberOfThreads;
 
                 threadList.WaitAll();
 
@@ -189,18 +205,28 @@ namespace Radar.Services
 
         }
 
-        public void ThreadedPingRequest(string targetIp, int t)
+        public void ThreadedPingRequest(string targetIp)
         {
             try
             {
-                var targetIpSplit = targetIp.Split(".");
 
-                targetIpSplit[3] = (int.Parse(targetIpSplit[3]) + t).ToString();
-                targetIp = string.Join(".", targetIpSplit);
+                Thread.Sleep(100);
+                    if (targetIp != lastHost)
+                    {
+                        if (hostList.Any(x => x.PingAttempted is false))
+                        {
+                            var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
+                            targetIp = targetHost.IP.ToString();
+                            hostList.Remove(targetHost);
+                        WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
-                WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
+                        var result = PingHost(IPAddress.Parse(targetIp));
+                    }
 
-                var result = PingHost(IPAddress.Parse(targetIp));
+
+                    }
+
+
             } catch (System.FormatException)
             {
 
@@ -222,7 +248,7 @@ namespace Radar.Services
                 {
                     if (i > 1)
                     {
-                        Console.WriteLine((int.Parse(ipSplit[i - 1]) + 1).ToString());
+                        //Console.WriteLine((int.Parse(ipSplit[i - 1]) + 1).ToString());
                         ipSplit[i - 1] = (int.Parse(ipSplit[i - 1]) + 1).ToString();
                         ipSplit[i] = "0";
                     }
@@ -251,7 +277,8 @@ namespace Radar.Services
                 if (result == IPStatus.Success)
                 {
                     foundHosts.Add(targetIp.ToString());
-                    WriteToConsole($"Found new host: {targetIp}", ConsoleColor.Green);
+                    //WriteToConsole($"Found new host: {targetIp}", ConsoleColor.Green);
+
                 }
 
                 // Scan host to get MAC address
@@ -262,11 +289,14 @@ namespace Radar.Services
                 {
                     WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
                     ActiveHosts.Add(host);
-                    var h = this.hostTracker.hosts.Select(x => x.IP == host.IP);
-                    
+
+                    //if (hostList.Where(x => x.IP == targetIp.ToString()).First() is not null)
+                    //ActiveHosts.Where(x => x.IP == targetIp.ToString()).FirstOrDefault().Alive = true;
+
+                    // need to figure out locking on above file
                 }
 
-                this.targetIp = IncrementIpAddress(targetIp.ToString());
+                //hostList.Where(x => x.IP == targetIp.ToString()).First().PingAttempted = true;
 
                 return true;
             } catch (System.FormatException)
