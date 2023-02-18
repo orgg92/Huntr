@@ -20,9 +20,6 @@ namespace Radar
         private HostTools HostTools { get; set; }
         private IEnumerable<Host> Hosts;
 
-        public string[] CommandOptions = new string[] { "Network Scan"};
-        public const string FeatureSelection = "Select one of the following options...";
-
         public RadarScanner(IIPManipulationService iPManipulationService, INetworkScanner networkScanner, IHostToolsService hostToolsService)
         {
             _networkScanner = networkScanner;
@@ -33,7 +30,6 @@ namespace Radar
         public void StartApp()
         {
             StartScan();
-            _hostToolsService.ChooseService(Hosts);
         }
 
         public void StartScan()

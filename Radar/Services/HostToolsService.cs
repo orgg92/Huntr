@@ -13,11 +13,11 @@ namespace Radar.Services
 {
     public class HostToolsService : IHostToolsService
     {
-        private Flooder Flooder { get; set; }
+        
 
         public HostToolsService()
         {
-            Flooder = new Flooder();
+            
         }
 
         public void ChooseService(IEnumerable<Host> hosts)

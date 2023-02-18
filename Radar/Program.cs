@@ -9,9 +9,8 @@ using System.Net.Sockets;
 
 internal class Program
 {
-    private async static Task Main(string[] args)
+    private static void Main(string[] args)
     {
-        //setup our DI
         var serviceProvider = new ServiceCollection()
             .AddSingleton<IIPManipulationService, IPManipulationService>()
             .AddSingleton<INetworkScanner, NetworkScanner>()
