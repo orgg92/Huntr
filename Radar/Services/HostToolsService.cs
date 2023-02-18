@@ -1,4 +1,5 @@
-﻿using Radar.Common.HostTools;
+﻿using Radar.Common;
+using Radar.Common.HostTools;
 using Radar.Common.NetworkModels;
 using Radar.Common.Util;
 using Radar.Services.Interfaces;
@@ -21,14 +22,22 @@ namespace Radar.Services
         private const int IP_Length = 15,
                           Vendor_Length = 64;
 
+        // Used to display results later
+        private string[] TableHeaderMessages = new string[] { 
+            "  # ",
+            "       IP        ",
+            "         MAC       ",
+            "                      Vendor                       ",
+            "         Hostname       "
+        };
+
 
         private Flooder Flooder { get; set; }
-        private const string TableHeader = "  # |       IP        |         MAC       |                      Vendor                       |";
-        private string TableHead = String.Format("{0,3} | {1,10} | {2,5} | {3,5} |", No, IP, MAC, Vendor);
+        private string TableHeader = String.Empty;
 
         public HostToolsService()
         {
-            Flooder = new Flooder();
+            TableHeader = $"{TableHeaderMessages[0]}|{TableHeaderMessages[1]}|{TableHeaderMessages[2]}|{TableHeaderMessages[3]}|{TableHeaderMessages[4]}|";
         }
 
         public void ChooseService(IEnumerable<Host> hosts)
@@ -59,36 +68,6 @@ namespace Radar.Services
             }
         }
 
-        private string PadIP(string IP)
-        {
-            var count = IP.Length;
-            var IPMaxLength = 15;
-
-            var sb = new StringBuilder();
-            sb.Append("  ");
-            sb.Append(IP);
-            sb.Append(' ', IPMaxLength - count);
-
-            
-            return sb.ToString();
-        }
-
-        //private string PadVariable(dynamic variable)
-        //{
-
-        //}
-
-        private string PadVendor(string vendor)
-        {
-            var count = 50;
-            var sb = new StringBuilder();
-
-            sb.Append(" ");
-            sb.Append(vendor);
-            sb.Append(' ', count - vendor.Length);
-            return sb.ToString();
-        }
-
         private Host HostPrompt(IEnumerable<Host> hosts)
         {
 
@@ -96,16 +75,26 @@ namespace Radar.Services
 
             for (int i = 0; i < hosts.Count(); i++)
             {
-                ConsoleTools.WriteToConsole(String.Format("{0,3} |{1}| {2,5} |{3}|", i+1, PadIP(hosts.ToList()[i].IP), hosts.ToList()[i].MAC, PadVendor(hosts.ToList()[i].Vendor)), ConsoleColor.Red);
-                    //)({i + 1}) {hosts.ToList()[i].IP} | {hosts.ToList()[i].MAC} | {hosts.ToList()[i].Vendor}  ", ConsoleColor.Red);
+                // create host for display to console
+                var host = hosts.Select(x => new Host() { HostName = x.HostName, MAC = x.MAC, IP = x.IP, Vendor = x.Vendor }).ElementAt(i);
+                var paddedHost = StringTableFormatter.PadPropertiesForDisplay(host, TableHeaderMessages[4]);
+
+                ConsoleTools.WriteToConsole(
+                    String.Format(
+                        "{0,3} |{1}| {2,5} |{3}| {4} |",
+                        i + 1,
+                        paddedHost.IP,
+                        paddedHost.MAC,
+                        paddedHost.Vendor,
+                        paddedHost.HostName),
+                ConsoleColor.Red);
+
             }
 
             ConsoleTools.WriteToConsole($"Select a host [1 - {hosts.Count()}] ", ConsoleColor.Yellow);
             var selectedHost = int.Parse(Console.ReadLine()) - 1;
 
-            return hosts.ToList()[selectedHost];
+            return hosts.ElementAt(selectedHost);
         }
-
-
     }
 }

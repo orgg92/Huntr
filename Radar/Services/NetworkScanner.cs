@@ -190,6 +190,25 @@ namespace Radar.Services
 
         }
 
+        private void ResolveHostNames()
+        {
+            //this.ActiveHosts.ForEach(x => x.HostName = QueryDNS(x));
+               
+        }
+
+        private IPHostEntry QueryDNS(Host host)
+        {
+            try
+            {
+                return Dns.GetHostByAddress(host.IP);
+            } catch (Exception e)
+            {
+                return new IPHostEntry();
+            }
+
+        }
+
+
         private string FormatStopwatch(Stopwatch stopwatch)
         {
             TimeSpan ts = stopWatch.Elapsed;
@@ -247,12 +266,9 @@ namespace Radar.Services
             // Block needs testing on Linux to confirm that ArpScan will work in the same way as the Windows 
 
             //var ping = new Ping();
-
             //int timeout = 100;
             //var reply = ping.Send(targetIp, timeout);
-
             //var result = reply.Status;
-
             //if (result == IPStatus.Success)
             //{
             //    foundHosts.Add(targetIp.ToString());
@@ -264,8 +280,11 @@ namespace Radar.Services
             // All properties are null if ARP scan fails
             if (host.IP is not null)
             {
-                ConsoleTools.WriteToConsole($"Found host: {host.IP} | {host.MAC} | {host.Vendor}", ConsoleColor.Green);
+                //ConsoleTools.WriteToConsole($"Found host: {host.IP} | {host.MAC} | {host.Vendor}", ConsoleColor.Green);
+                ConsoleTools.WriteToConsole($"Found host: {host.IP}", ConsoleColor.Green);
+                host.HostName = QueryDNS(host).HostName ?? "Unknown";
                 ActiveHosts.Add(host);
+
             }
 
             return true;
