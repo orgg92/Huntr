@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using Radar.Common.HostTools;
 using Radar.Services.Interfaces;
 using Radar.Common.NetworkModels;
+using Radar.Common.Util;
 
 namespace Radar
 {
@@ -19,7 +20,7 @@ namespace Radar
         private HostTools HostTools { get; set; }
         private IEnumerable<Host> Hosts;
 
-        public string[] CommandOptions = new string[] { "Network Scan", "DHCP Finder", "DNS Finder" };
+        public string[] CommandOptions = new string[] { "Network Scan"};
         public const string FeatureSelection = "Select one of the following options...";
 
         public RadarScanner(IIPManipulationService iPManipulationService, INetworkScanner networkScanner, IHostToolsService hostToolsService)
@@ -43,10 +44,11 @@ namespace Radar
             Hosts = _networkScanner.StartScan(iface);
         }
 
-        private static void SaveToLogFile()
+        public void InvalidSelection()
         {
-
+            ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
         }
+
     }
 }
 

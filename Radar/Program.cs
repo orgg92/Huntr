@@ -13,7 +13,6 @@ internal class Program
     {
         //setup our DI
         var serviceProvider = new ServiceCollection()
-            //.AddLogging()
             .AddSingleton<IIPManipulationService, IPManipulationService>()
             .AddSingleton<INetworkScanner, NetworkScanner>()
             .AddSingleton<IHostToolsService, HostToolsService>()
@@ -25,13 +24,5 @@ internal class Program
 
         var radar = new RadarScanner(ipService, networkService, toolsService);
         radar.StartApp();
-    }
-
-
-    public enum ConsoleColors
-    {
-        Red,
-        Yellow,
-        Green
     }
 }
