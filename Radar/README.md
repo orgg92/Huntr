@@ -9,5 +9,5 @@ The number of hosts is determined from the subnet, a larger subnet could take so
 To do:
 - Save log files
 - Custom config
-- Enhance scanning tools (find DHCP servers, check for open ports, etc)
-- Host specific tools 
+- Enhance scanning tools 
+- Host specific tools (check for open ports etc)
