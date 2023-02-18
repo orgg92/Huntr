@@ -3,16 +3,11 @@
 using ArpLookup;
 using Radar.Common.NetworkModels;
 using Radar.Common.Util;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace Radar.Common
 {
@@ -50,10 +45,6 @@ namespace Radar.Common
 
         private static Host LookupMAC(string ipString, Host result)
         {
-            byte[] macAddr = new byte[6];
-
-            var ipAddress = IPAddress.Parse(ipString);
-
             PhysicalAddress mac = Arp.Lookup(IPAddress.Parse(ipString));
 
             if (mac is not null)
@@ -102,7 +93,6 @@ namespace Radar.Common
         public static Host CheckStatus(string ipAddress, int timeout)
         {
             Host result = new Host();
-            byte[] macAddr = new byte[6];
 
             try
             {

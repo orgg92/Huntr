@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using Radar.Common.HostTools;
 using Radar.Services.Interfaces;
 using Radar.Common.NetworkModels;
+using Radar.Common.Util;
 
 namespace Radar
 {
@@ -19,7 +20,7 @@ namespace Radar
         private HostTools HostTools { get; set; }
         private IEnumerable<Host> Hosts;
 
-        public string[] CommandOptions = new string[] { "Network Scan", "DHCP Finder", "DNS Finder" };
+        public string[] CommandOptions = new string[] { "Network Scan"};
         public const string FeatureSelection = "Select one of the following options...";
 
         public RadarScanner(IIPManipulationService iPManipulationService, INetworkScanner networkScanner, IHostToolsService hostToolsService)
@@ -31,28 +32,36 @@ namespace Radar
 
         public void StartApp()
         {
-            //Console.WriteLine(FeatureSelection);
+            Console.WriteLine(FeatureSelection);
 
-            //for (int i = 0; i < CommandOptions.Length; i++)
-            //{
-            //    Console.WriteLine($"({i + 1}) {CommandOptions[i]}");
-            //}
+                for (int i = 0; i < CommandOptions.Length; i++)
+                {
+                    ConsoleTools.WriteToConsole($"({i + 1}) {CommandOptions[i]}", ConsoleColor.Yellow);
+                }
 
-            //var input = Console.ReadLine();
-            //switch (int.Parse(input))
-            //{
-            //    case 1:
-                    StartScan();
-            //        break;
-            //    case 2:
-            //        // Find DHCP
-            //        break;
-            //    case 3:
-            //        // Find DNS
-            //        break;
-            //}
+            var input = Console.ReadLine();
 
-            _hostToolsService.ChooseService(Hosts);
+            bool successfullyParsed = int.TryParse(input, out var ignored);
+
+            if (successfullyParsed)
+            {
+                switch (int.Parse(input))
+                {
+                    case 1:
+                        StartScan();
+                        break;
+
+                    default:
+                        ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
+                        break;
+                }
+
+                _hostToolsService.ChooseService(Hosts);
+            } else
+            {
+                InvalidSelection();
+            }
+
         }
 
         public void StartScan()
@@ -63,10 +72,11 @@ namespace Radar
             Hosts = _networkScanner.StartScan(iface);
         }
 
-        private static void SaveToLogFile()
+        public void InvalidSelection()
         {
-
+            ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
         }
+
     }
 }
 
