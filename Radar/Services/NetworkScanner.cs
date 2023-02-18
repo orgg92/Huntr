@@ -18,13 +18,11 @@ namespace Radar.Services
         private string foundInterfacesMsg = "Found {0} interfaces...",
                        findingInterfacesMsg = "Searching for network interfaces...",
                        findingNetworkHostsMsg = "Searching for hosts...",
-                       foundNetworkHostsMsg = "Found {0} hosts...",
                        firstHost = String.Empty,
                        lastHost = String.Empty;
 
 
         private SubnetsList _subnetList;
-        private string hostIP = String.Empty;
         private int interfaceCount;
 
         private NetworkInterface[] ifaces;
@@ -37,10 +35,6 @@ namespace Radar.Services
 
         private List<Host> ActiveHosts = new List<Host>();
         private List<AbstractHost> hostList = new List<AbstractHost>();
-
-        private string input = String.Empty;
-
-        private byte[] macAddr = new byte[6];
 
         private readonly IIPManipulationService _iPManipulationService;
 
@@ -191,23 +185,15 @@ namespace Radar.Services
 
         public void ThreadedPingRequest()
         {
-            try
+            if (hostList.Any(x => x.PingAttempted is false))
             {
-                if (hostList.Any(x => x.PingAttempted is false))
-                {
-                    var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
-                    targetIp = targetHost.IP.ToString();
-                    hostList.Remove(targetHost);
-                    WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
+                var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
+                targetIp = targetHost.IP.ToString();
+                hostList.Remove(targetHost);
+                WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
-                    var result = PingHost(IPAddress.Parse(targetIp));
-                }         
-            }
-            catch (System.FormatException)
-            {
-
-            }
-
+                var result = PingHost(IPAddress.Parse(targetIp));
+            }         
         }
 
         public string IncrementIpAddress(string ipAddress)
@@ -235,39 +221,33 @@ namespace Radar.Services
 
         public bool PingHost(IPAddress targetIp)
         {
-            try
+            var foundHosts = new List<string>();
+
+            Host host;
+
+            var ping = new Ping();
+
+            int timeout = 100;
+            var reply = ping.Send(targetIp, timeout);
+
+            var result = reply.Status;
+
+            if (result == IPStatus.Success)
             {
-                var foundHosts = new List<string>();
-
-                Host host;
-
-                var ping = new Ping();
-
-                int timeout = 100;
-                var reply = ping.Send(targetIp, timeout);
-
-                var result = reply.Status;
-
-                if (result == IPStatus.Success)
-                {
-                    foundHosts.Add(targetIp.ToString());
-                }
-
-                // Scan host to get MAC address
-                host = ArpScan.Scan(targetIp.ToString());
-
-                // All properties are null if ARP scan fails
-                if (host.IP is not null)
-                {
-                    WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
-                    ActiveHosts.Add(host);
-                }
-
-                return true;
-            } catch (System.FormatException)
-            {
-                return false;
+                foundHosts.Add(targetIp.ToString());
             }
+
+            // Scan host to get MAC address
+            host = ArpScan.Scan(targetIp.ToString());
+
+            // All properties are null if ARP scan fails
+            if (host.IP is not null)
+            {
+                WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
+                ActiveHosts.Add(host);
+            }
+
+            return true;
 
         }
 
