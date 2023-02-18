@@ -30,6 +30,7 @@ namespace Radar.Services
         private IPAddress ipAddress;
         private string subnetMask;
         private string targetIp;
+        private Stopwatch stopWatch;
 
         private HostTracker hostTracker;
 
@@ -45,6 +46,7 @@ namespace Radar.Services
 
             ifaces = NetworkInterface.GetAllNetworkInterfaces();
             hostTracker = new HostTracker();
+            stopWatch = new Stopwatch();
 
         }
 
@@ -54,8 +56,8 @@ namespace Radar.Services
             {
                 interfaceCount = ifaces.Count();
 
-                WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
-                WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
+                ConsoleTools.WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
+                ConsoleTools.WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
 
                 int i = 1;
 
@@ -69,7 +71,7 @@ namespace Radar.Services
                                 .Select(i => i.Address)
                                 .First();
                     subnetMask = _iPManipulationService.ReturnSubnetmask(ipAddress);
-                    WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
+                    ConsoleTools.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
 
                     var bytes = ipAddress.GetAddressBytes();
                     var binarySubnetMask = String.Join(".", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
@@ -77,13 +79,11 @@ namespace Radar.Services
                     i++;
                 }
 
-                Console.WriteLine(spacer);
+                ConsoleTools.WriteToConsole(spacer, ConsoleColor.Yellow);
 
-                WriteToConsole("Select an interface to scan on... (Default: ALL - this may take a while)", ConsoleColor.Yellow);
+                ConsoleTools.WriteToConsole("Select an interface to scan on... (Default: ALL - this may take a while)", ConsoleColor.Yellow);
 
                 var input = Console.ReadLine();
-
-                var hosts = new Host[120000];
 
                 return input;
 
@@ -95,7 +95,9 @@ namespace Radar.Services
 
         public IEnumerable<Host> StartScan(string userInput)
         {
-            WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
+            stopWatch.Start();
+
+            ConsoleTools.WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
 
             var subnetMask = ScanInterfaces(userInput);
 
@@ -120,7 +122,7 @@ namespace Radar.Services
                             .Select(i => i.Address)
                             .First();
 
-                WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
+                ConsoleTools.WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
 
                 return subnetMask.ToString();
             }
@@ -177,10 +179,27 @@ namespace Radar.Services
                 threadList.Clear();
             }
 
-            WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
-            
+            stopWatch.Stop();
+
+            var elapsedTime  = FormatStopwatch(stopWatch);
+
+            ConsoleTools.WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
+            ConsoleTools.WriteToConsole($"Scan completed in: {elapsedTime}", ConsoleColor.Green);
+
             return ActiveHosts;
 
+        }
+
+        private string FormatStopwatch(Stopwatch stopwatch)
+        {
+            TimeSpan ts = stopWatch.Elapsed;
+
+            // Format and display the TimeSpan value.
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+
+            return elapsedTime;
         }
 
         public void ThreadedPingRequest()
@@ -190,7 +209,7 @@ namespace Radar.Services
                 var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
                 targetIp = targetHost.IP.ToString();
                 hostList.Remove(targetHost);
-                WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
+                ConsoleTools.WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
                 var result = PingHost(IPAddress.Parse(targetIp));
             }         
@@ -225,17 +244,19 @@ namespace Radar.Services
 
             Host host;
 
-            var ping = new Ping();
+            // Block needs testing on Linux to confirm that ArpScan will work in the same way as the Windows 
 
-            int timeout = 100;
-            var reply = ping.Send(targetIp, timeout);
+            //var ping = new Ping();
 
-            var result = reply.Status;
+            //int timeout = 100;
+            //var reply = ping.Send(targetIp, timeout);
 
-            if (result == IPStatus.Success)
-            {
-                foundHosts.Add(targetIp.ToString());
-            }
+            //var result = reply.Status;
+
+            //if (result == IPStatus.Success)
+            //{
+            //    foundHosts.Add(targetIp.ToString());
+            //}
 
             // Scan host to get MAC address
             host = ArpScan.Scan(targetIp.ToString());
@@ -243,19 +264,12 @@ namespace Radar.Services
             // All properties are null if ARP scan fails
             if (host.IP is not null)
             {
-                WriteToConsole($"{host.IP}, {host.MAC}, {host.Vendor}", ConsoleColor.Green);
+                ConsoleTools.WriteToConsole($"Found host: {host.IP} | {host.MAC} | {host.Vendor}", ConsoleColor.Green);
                 ActiveHosts.Add(host);
             }
 
             return true;
 
-        }
-
-        private static void WriteToConsole(string msg, ConsoleColor color)
-        {
-            Console.ForegroundColor = color;
-            Console.WriteLine(msg);
-            Console.ResetColor();
         }
     }
 }

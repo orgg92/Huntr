@@ -40,13 +40,33 @@ namespace Radar
         {
             Hosts = Enumerable.Empty<Host>();
 
+            Input:
             var iface = _networkScanner.FindInterfaces();
-            Hosts = _networkScanner.StartScan(iface);
+            if (!ValidateInput(iface))
+            {
+                InvalidSelection();
+                goto Input;
+            } else
+            {
+                Hosts = _networkScanner.StartScan(iface);
+            }
         }
 
         public void InvalidSelection()
         {
             ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
+        }
+
+        public bool ValidateInput(string input)
+        {
+            if (int.TryParse(input, out var ignoreMe))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
 
     }
