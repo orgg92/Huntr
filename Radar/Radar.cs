@@ -32,36 +32,8 @@ namespace Radar
 
         public void StartApp()
         {
-            Console.WriteLine(FeatureSelection);
-
-                for (int i = 0; i < CommandOptions.Length; i++)
-                {
-                    ConsoleTools.WriteToConsole($"({i + 1}) {CommandOptions[i]}", ConsoleColor.Yellow);
-                }
-
-            var input = Console.ReadLine();
-
-            bool successfullyParsed = int.TryParse(input, out var ignored);
-
-            if (successfullyParsed)
-            {
-                switch (int.Parse(input))
-                {
-                    case 1:
-                        StartScan();
-                        break;
-
-                    default:
-                        ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
-                        break;
-                }
-
-                _hostToolsService.ChooseService(Hosts);
-            } else
-            {
-                InvalidSelection();
-            }
-
+            StartScan();
+            _hostToolsService.ChooseService(Hosts);
         }
 
         public void StartScan()

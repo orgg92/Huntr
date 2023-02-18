@@ -41,13 +41,6 @@ namespace Radar.Services
 
                 ConsoleTools.WriteToConsole("Select a tool...", ConsoleColor.Yellow);
                 var input = int.Parse(Console.ReadLine()) - 1;
-
-                switch (input)
-                {
-                    case 0:
-                        this.Flooder.GenerateTraffic(targetHost);
-                        break;
-                }
             }
             catch (Exception e)
             {
