@@ -15,4 +15,4 @@ To do:
 Branch note:
 master: fully working features
 beta: experimental changes
-?: here be dragons
+vx.x.x: here be dragons
