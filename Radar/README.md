@@ -11,3 +11,8 @@ To do:
 - Custom config
 - Enhance scanning tools 
 - Host specific tools (check for open ports etc)
+
+Branch note:
+master: fully working features
+beta: experimental changes
+?: here be dragons
