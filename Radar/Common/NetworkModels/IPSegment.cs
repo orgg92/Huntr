@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Radar.Common.NetworkModels
+﻿namespace Radar.Common.NetworkModels
 {
+    using System.Globalization;
+
     public class IPSegment
     {
 

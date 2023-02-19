@@ -15408,6 +15408,7 @@
 30-AE-A4|Espressif Inc.
 30-AE-F6|Radio Mobile Access
 30-B1-64|Power Electronics International Inc.
+30-B1-B5|Arcadyan Corporation
 30-B2-16|ABB AG - Power Grids - Grid Automation
 30-B3-A2|Shenzhen Heguang Measurement & Control Technology Co.,Ltd
 30-B4-9E|TP-LINK TECHNOLOGIES CO.,LTD.
@@ -23875,6 +23876,7 @@ D4-81-D7|Dell Inc.
 D4-82-3E|Argosy Technologies, Ltd.
 D4-83-04|SHENZHEN FAST TECHNOLOGIES CO.,LTD
 D4-85-64|Hewlett Packard
+D4-86-60|Arcadyan Corporation
 D4-87-D8|Samsung Electronics Co.,Ltd
 D4-88-3F|HDPRO CO., LTD.
 D4-88-90|Samsung Electronics Co.,Ltd
