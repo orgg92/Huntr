@@ -1,20 +1,17 @@
-﻿using Radar.Common;
-using Radar.Common.NetworkModels;
-using Radar.Common.Util;
-using Radar.Services.Interfaces;
-using System.Diagnostics;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Net.Sockets;
-
-namespace Radar.Services
+﻿namespace Radar.Services
 {
+    using Radar.Common;
+    using Radar.Common.NetworkModels;
+    using Radar.Common.Util;
+    using Radar.Services.Interfaces;
+    using System.Diagnostics;
+    using System.Net;
+    using System.Net.NetworkInformation;
+    using System.Net.Sockets;
 
 
     public class NetworkScanner : INetworkScanner
     {
-        private const string spacer = "***********************************************************";
-
         private string foundInterfacesMsg = "Found {0} interfaces...",
                        findingInterfacesMsg = "Searching for network interfaces...",
                        findingNetworkHostsMsg = "Searching for hosts...",
@@ -50,47 +47,34 @@ namespace Radar.Services
 
         }
 
-        public string FindInterfaces()
+        public NetworkInterface[] FindInterfaces()
         {
-            try
+            interfaceCount = ifaces.Count();
+
+            ConsoleTools.WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
+            ConsoleTools.WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
+
+            int i = 1;
+
+            foreach (var iface in ifaces)
             {
-                interfaceCount = ifaces.Count();
+                ipAddresses = iface.GetIPProperties().UnicastAddresses;
 
-                ConsoleTools.WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
-                ConsoleTools.WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
+                ipAddress = ipAddresses
+                            .Select(x => x)
+                            .Where(u => u.Address.AddressFamily == AddressFamily.InterNetwork)
+                            .Select(i => i.Address)
+                            .First();
+                subnetMask = _iPManipulationService.ReturnSubnetmask(ipAddress);
+                ConsoleTools.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
 
-                int i = 1;
-
-                foreach (var iface in ifaces)
-                {
-                    ipAddresses = iface.GetIPProperties().UnicastAddresses;
-
-                    ipAddress = ipAddresses
-                                .Select(x => x)
-                                .Where(u => u.Address.AddressFamily == AddressFamily.InterNetwork)
-                                .Select(i => i.Address)
-                                .First();
-                    subnetMask = _iPManipulationService.ReturnSubnetmask(ipAddress);
-                    ConsoleTools.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
-
-                    var bytes = ipAddress.GetAddressBytes();
-                    var binarySubnetMask = String.Join(".", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
-                    int mask = binarySubnetMask.Count(b => b == '1');
-                    i++;
-                }
-
-                ConsoleTools.WriteToConsole(spacer, ConsoleColor.Yellow);
-
-                ConsoleTools.WriteToConsole("Select an interface to scan on... (Default: ALL - this may take a while)", ConsoleColor.Yellow);
-
-                var input = Console.ReadLine();
-
-                return input;
-
-            } catch (Exception e)
-            {
-                return e.Message;
+                var bytes = ipAddress.GetAddressBytes();
+                var binarySubnetMask = String.Join(".", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
+                int mask = binarySubnetMask.Count(b => b == '1');
+                i++;
             }
+
+            return ifaces;
         }
 
         public IEnumerable<Host> StartScan(string userInput)
@@ -172,7 +156,7 @@ namespace Radar.Services
                 }
 
                 // Increment by number of threads 
-                i=i+numberOfThreads;
+                i = i + numberOfThreads;
 
                 threadList.WaitAll();
 
@@ -181,7 +165,7 @@ namespace Radar.Services
 
             stopWatch.Stop();
 
-            var elapsedTime  = FormatStopwatch(stopWatch);
+            var elapsedTime = FormatStopwatch(stopWatch);
 
             ConsoleTools.WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
             ConsoleTools.WriteToConsole($"Scan completed in: {elapsedTime}", ConsoleColor.Green);
@@ -193,7 +177,7 @@ namespace Radar.Services
         private void ResolveHostNames()
         {
             //this.ActiveHosts.ForEach(x => x.HostName = QueryDNS(x));
-               
+
         }
 
         private IPHostEntry QueryDNS(Host host)
@@ -201,7 +185,8 @@ namespace Radar.Services
             try
             {
                 return Dns.GetHostByAddress(host.IP);
-            } catch (Exception e)
+            }
+            catch (Exception e)
             {
                 return new IPHostEntry();
             }
@@ -231,7 +216,7 @@ namespace Radar.Services
                 ConsoleTools.WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
                 var result = PingHost(IPAddress.Parse(targetIp));
-            }         
+            }
         }
 
         public string IncrementIpAddress(string ipAddress)
@@ -241,20 +226,20 @@ namespace Radar.Services
             // Increment the last octet
             ipSplit[ipSplit.Count() - 1] = (int.Parse(ipSplit[ipSplit.Count() - 1]) + 1).ToString();
 
-            for(int i = 3; i > 0; i--)
+            for (int i = 3; i > 0; i--)
             {
                 // check if any octet is 256 (if so - increment previous octet and reset current octet to 0, but only for the fourth, third and second octets)
                 if (ipSplit[i] == "256")
                 {
                     if (i > 1)
-                    { 
+                    {
                         ipSplit[i - 1] = (int.Parse(ipSplit[i - 1]) + 1).ToString();
                         ipSplit[i] = "0";
                     }
                 }
             }
 
-            return String.Join(".",ipSplit);
+            return String.Join(".", ipSplit);
         }
 
         public bool PingHost(IPAddress targetIp)

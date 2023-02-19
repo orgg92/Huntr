@@ -1,17 +1,11 @@
-﻿using Radar.Common;
-using Radar.Common.HostTools;
-using Radar.Common.NetworkModels;
-using Radar.Common.Util;
-using Radar.Services.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Radar.Services
+﻿namespace Radar.Services
 {
+    using Radar.Common;
+    using Radar.Common.HostTools;
+    using Radar.Common.NetworkModels;
+    using Radar.Common.Util;
+    using Radar.Services.Interfaces;
+
     public class HostToolsService : IHostToolsService
     {
         private const string IP = "IP",
@@ -23,7 +17,7 @@ namespace Radar.Services
                           Vendor_Length = 64;
 
         // Used to display results later
-        private string[] TableHeaderMessages = new string[] { 
+        private string[] TableHeaderMessages = new string[] {
             "  # ",
             "       IP        ",
             "         MAC       ",

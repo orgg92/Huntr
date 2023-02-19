@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
-using Radar.Common.NetworkModels;
-
-namespace Radar.Common.HostTools
+﻿namespace Radar.Common.HostTools
 {
+    using Radar.Common.NetworkModels;
+    using System.Diagnostics;
+    using System.Net.NetworkInformation;
+
     public class Flooder : HostTool
     {
         public Flooder()
@@ -33,14 +27,14 @@ namespace Radar.Common.HostTools
 
             while (DateTime.UtcNow - startTime < TimeSpan.FromMinutes(5))
             {
-                    Task.Run( () => PingHost(targetHost));
+                Task.Run(() => PingHost(targetHost));
             }
 
         }
 
         private static void CreatePingThread(Host targetHost)
         {
-            
+
         }
 
         private static void PingHost(Host targetHost)

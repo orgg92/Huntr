@@ -1,7 +1,7 @@
-﻿using System.Net;
-
-namespace Radar.Services.Interfaces
+﻿namespace Radar.Services.Interfaces
 {
+    using System.Net;
+
     public interface IIPManipulationService
     {
         uint ReturnFirtsOctet(IPAddress ipAddress);

@@ -1,13 +1,7 @@
-﻿using Radar.Common.NetworkModels;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Radar.Common
+﻿namespace Radar.Common
 {
+    using Radar.Common.NetworkModels;
+    using System.Text;
 
     // Used to display the results of the network scan, a little bit inefficient but the trade off for convenience makes it worth while
 
@@ -45,7 +39,7 @@ namespace Radar.Common
             sb.Clear();
 
             var count = tableHeaderMsg.Length;
-            
+
             sb.Append(" ");
             sb.Append(hostname);
             sb.Append(' ', (count - 3) - hostname.Length);
@@ -63,8 +57,8 @@ namespace Radar.Common
                 Vendor = PadVendor(host.Vendor, sb),
                 HostName = PadHostname(host.HostName, tableHeaderMsg, sb),
                 MAC = host.MAC
-            };            
-                    
+            };
+
             return newHost;
         }
     }

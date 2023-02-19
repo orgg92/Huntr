@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
-using Radar.Services.Interfaces;
-
-namespace Radar.Services
+﻿namespace Radar.Services
 {
+    using Radar.Services.Interfaces;
+    using System.Net;
+
     public class IPManipulationService : IIPManipulationService
     {
         public IPManipulationService()

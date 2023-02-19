@@ -1,16 +1,16 @@
 ﻿// Some code borrowed and refactored from giuliocomi @ github: https://github.com/giuliocomi/arp-scanner
 
-using ArpLookup;
-using Radar.Common.NetworkModels;
-using Radar.Common.Util;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text.RegularExpressions;
-
 namespace Radar.Common
 {
+    using ArpLookup;
+    using Radar.Common.NetworkModels;
+    using Radar.Common.Util;
+    using System.Net;
+    using System.Net.NetworkInformation;
+    using System.Reflection;
+    using System.Runtime.InteropServices;
+    using System.Text.RegularExpressions;
+
     public class ArpScan
     {
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
@@ -85,7 +85,7 @@ namespace Radar.Common
             }
             catch (Exception e)
             {
-                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red); 
+                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red);
             }
             return "Unknown";
         }
@@ -100,7 +100,7 @@ namespace Radar.Common
             }
             catch (Exception e)
             {
-                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red); 
+                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red);
             }
 
             return result;
