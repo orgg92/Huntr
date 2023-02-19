@@ -174,17 +174,11 @@
 
         }
 
-        private void ResolveHostNames()
-        {
-            //this.ActiveHosts.ForEach(x => x.HostName = QueryDNS(x));
-
-        }
-
         private IPHostEntry QueryDNS(Host host)
         {
             try
             {
-                return Dns.GetHostByAddress(host.IP);
+                return Dns.GetHostEntry(host.IP);
             }
             catch (Exception e)
             {
@@ -244,20 +238,7 @@
 
         public bool PingHost(IPAddress targetIp)
         {
-            var foundHosts = new List<string>();
-
             Host host;
-
-            // Block needs testing on Linux to confirm that ArpScan will work in the same way as the Windows 
-
-            //var ping = new Ping();
-            //int timeout = 100;
-            //var reply = ping.Send(targetIp, timeout);
-            //var result = reply.Status;
-            //if (result == IPStatus.Success)
-            //{
-            //    foundHosts.Add(targetIp.ToString());
-            //}
 
             // Scan host to get MAC address
             host = ArpScan.Scan(targetIp.ToString());

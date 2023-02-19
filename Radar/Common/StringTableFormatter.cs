@@ -7,12 +7,13 @@
 
     public class StringTableFormatter
     {
+        private static int IPMaxLength = 15;
+
         public static string PadIP(string IP, StringBuilder sb)
         {
             sb.Clear();
 
             var count = IP.Length;
-            var IPMaxLength = 15;
 
             sb.Append("  ");
             sb.Append(IP);

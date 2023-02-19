@@ -37,7 +37,7 @@
             var ifaces = _networkScanner.FindInterfaces();
 
             ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
-            ConsoleTools.WriteToConsole("Select an interface to scan on... (Default: ALL - this may take a while)", ConsoleColor.Yellow);
+            ConsoleTools.WriteToConsole("Select an interface to scan on...", ConsoleColor.Yellow);
 
             var input = Console.ReadLine();
 
