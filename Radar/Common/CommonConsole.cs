@@ -10,8 +10,10 @@
 
         public static string TableHeader = String.Empty;
 
+        public static readonly string[] PortTableHeaderMessages = { "  Port  ", " Service " };
+
         // Used to display results - not pretty but looks okay in the console
-        public static readonly string[] TableHeaderMessages = {
+        public static readonly string[] DeviceTableHeaderMessages = {
             "  # ",
             "       IP        ",
             "         MAC       ",

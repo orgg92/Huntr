@@ -28,7 +28,7 @@ namespace Radar.Common
         {
             int timeout = 2000;
             Host host = new Host();
-            macList = LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/MacList.txt");
+            macList = FileReader.LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/MacList.txt");
             host = CheckStatus(ipAddress, timeout);
 
             return host;
@@ -102,24 +102,6 @@ namespace Radar.Common
             }
 
             return result;
-        }
-
-        private static List<string> LoadListFromFile(string filename)
-        {
-            List<string> list = new List<string>();
-
-            try
-            {
-                foreach (var ipAddress in File.ReadAllLines(filename))
-                    list.Add(ipAddress.Trim());
-            }
-            catch (Exception e)
-            {
-                ConsoleTools.WriteToConsole("Error reading file.", ConsoleColor.Red);
-
-                return new List<string>();
-            }
-            return list;
         }
 
     }
