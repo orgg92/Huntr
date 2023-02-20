@@ -84,7 +84,6 @@
             ConsoleTools.WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
 
             var subnetMask = ScanInterfaces(userInput);
-
             var hosts = ScanNetwork(ipAddress, subnetMask.ToString());
 
             return ActiveHosts.Select(x => x).Distinct().ToArray();
@@ -120,7 +119,6 @@
         {
             // Calculate number of hosts from subnet mask
             var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
-
             var segment = new IPSegment(ipAddress.ToString(), subnet.SubnetMask);
 
             // Calculate first IP to scan based on input IP
@@ -130,7 +128,6 @@
 
             // Create list of threads 
             var threadList = new List<Thread>();
-
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
             // inefficient but without this list, the multithreading process can skip hosts 
@@ -157,9 +154,7 @@
 
                 // Increment by number of threads 
                 i = i + numberOfThreads;
-
                 threadList.WaitAll();
-
                 threadList.Clear();
             }
 
@@ -174,17 +169,11 @@
 
         }
 
-        private void ResolveHostNames()
-        {
-            //this.ActiveHosts.ForEach(x => x.HostName = QueryDNS(x));
-
-        }
-
         private IPHostEntry QueryDNS(Host host)
         {
             try
             {
-                return Dns.GetHostByAddress(host.IP);
+                return Dns.GetHostEntry(host.IP);
             }
             catch (Exception e)
             {
@@ -244,20 +233,7 @@
 
         public bool PingHost(IPAddress targetIp)
         {
-            var foundHosts = new List<string>();
-
             Host host;
-
-            // Block needs testing on Linux to confirm that ArpScan will work in the same way as the Windows 
-
-            //var ping = new Ping();
-            //int timeout = 100;
-            //var reply = ping.Send(targetIp, timeout);
-            //var result = reply.Status;
-            //if (result == IPStatus.Success)
-            //{
-            //    foundHosts.Add(targetIp.ToString());
-            //}
 
             // Scan host to get MAC address
             host = ArpScan.Scan(targetIp.ToString());
@@ -265,7 +241,6 @@
             // All properties are null if ARP scan fails
             if (host.IP is not null)
             {
-                //ConsoleTools.WriteToConsole($"Found host: {host.IP} | {host.MAC} | {host.Vendor}", ConsoleColor.Green);
                 ConsoleTools.WriteToConsole($"Found host: {host.IP}", ConsoleColor.Green);
                 host.HostName = QueryDNS(host).HostName ?? "Unknown";
                 ActiveHosts.Add(host);

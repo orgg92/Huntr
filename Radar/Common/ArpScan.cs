@@ -16,8 +16,6 @@ namespace Radar.Common
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         private static extern int SendARP(int DestIP, int SrcIP, byte[] pMacAddr, ref uint PhyAddrLen);
 
-        private static uint macAddrLen = (uint)new byte[6].Length;
-        private const string separator = "|";
         private static List<string> macList = new List<string>();
 
         public ArpScan()
@@ -79,7 +77,7 @@ namespace Radar.Common
                     Match found = Regex.Match(entry, pattern);
                     if (found.Success)
                     {
-                        return found.Value.Split(separator[0])[1];
+                        return found.Value.Split(CommonConsole.separator[0])[1];
                     }
                 }
             }
