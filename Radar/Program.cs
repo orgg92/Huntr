@@ -20,7 +20,7 @@ internal class Program
         var toolsService = serviceProvider.GetService<IHostToolsService>();
         var loggingService = serviceProvider.GetService<ILoggingService>();
 
-        var radar = new RadarScanner(ipService, networkService, toolsService);
+        var radar = new RadarScanner(ipService, networkService, toolsService, loggingService);
         radar.StartApp();
     }
 }

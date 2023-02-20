@@ -6,7 +6,7 @@
     public interface ILoggingService
     {
         void LogToConsole(string message, ConsoleColor color);
-        void LogToFile(string message);
-        void DisplayHostList(IEnumerable<Host> hosts);
+        void LogToFile(string[] textArray);
+        string[] DisplayHostList(IEnumerable<Host> hosts);
     }
 }

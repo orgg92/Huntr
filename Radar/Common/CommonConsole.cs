@@ -10,7 +10,7 @@
 
         public static string TableHeader = String.Empty;
 
-        // Used to display results
+        // Used to display results - not pretty but looks okay in the console
         public static readonly string[] TableHeaderMessages = {
             "  # ",
             "       IP        ",
