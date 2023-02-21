@@ -1,6 +1,6 @@
 ﻿// Some code borrowed and refactored from giuliocomi @ github: https://github.com/giuliocomi/arp-scanner
 
-namespace Radar.Common
+namespace Radar.Common.Netscan
 {
     using ArpLookup;
     using Radar.Common.NetworkModels;

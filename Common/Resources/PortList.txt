@@ -1,4 +1,6 @@
-﻿1|TCP Port Service Multiplexer (TCPMUX)
+﻿5027|Test
+7027|Test
+1|TCP Port Service Multiplexer (TCPMUX)
 5|Remote Job Entry (RJE)
 7|ECHO
 18|Message Send Protocol (MSP)
@@ -53,7 +55,6 @@
 1527|(posiblemente listener de GlassFish)
 2483|Oracle database listening for unsecure client connections to the listener, replaces port 1521
 2525|SMTP alternate
-8080|Apache Tomcat
-8080|GlassFish HTTP
+8080|Apache Tomcat\GlassFish HTTP
 8181|GlassFish HTTPS
 4848|GlassFish Administration

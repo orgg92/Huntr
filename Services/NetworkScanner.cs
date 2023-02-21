@@ -1,6 +1,6 @@
 ﻿namespace Radar.Services
 {
-    using Radar.Common;
+    using Radar.Common.Netscan;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
     using Radar.Services.Interfaces;

@@ -1,4 +1,4 @@
-﻿namespace Radar.Common
+﻿namespace Radar.Common.NetworkModels
 {
     public class HostTracker
     {

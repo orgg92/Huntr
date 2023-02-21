@@ -26,6 +26,7 @@
 
         public void StartApp()
         {
+            var config = BuildConfig();
             var loggingText = RunPhase1();
             LoggingPrompt(loggingText);
             RunPhase2();
@@ -115,6 +116,11 @@
             {
                 _hostToolsService.ChooseService(Hosts);
             }
+        }
+
+        public List<ConfigSetting> BuildConfig()
+        {
+            return ConfigLoader.LoadConfig();
         }
 
     }

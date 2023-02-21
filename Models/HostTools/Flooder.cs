@@ -15,11 +15,9 @@
 
         public void GenerateTraffic(Host targetHost)
         {
-            // Calculate number of threads and half 
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
             var threads = new List<Thread>();
-            //PingHost(targetHost);
 
             Thread.Sleep(500);
 
