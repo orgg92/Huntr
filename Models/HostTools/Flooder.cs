@@ -30,11 +30,6 @@
 
         }
 
-        private static void CreatePingThread(Host targetHost)
-        {
-
-        }
-
         private static void PingHost(Host targetHost)
         {
 

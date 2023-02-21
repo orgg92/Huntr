@@ -17,7 +17,7 @@
         public string[] CommandOptions = new string[] { "Network Scan" };
         public const string FeatureSelection = "Select one of the following options...";
 
-        public RadarScanner(IIPManipulationService iPManipulationService, INetworkScanner networkScanner, IHostToolsService hostToolsService, ILoggingService loggingService)
+        public RadarScanner(INetworkScanner networkScanner, IHostToolsService hostToolsService, ILoggingService loggingService)
         {
             _networkScanner = networkScanner;
             _hostToolsService = hostToolsService;

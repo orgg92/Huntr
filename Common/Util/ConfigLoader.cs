@@ -1,16 +1,10 @@
 ﻿namespace Radar.Common.Util
 {
-    using System;
-    using System.Collections.Generic;
-    using System.Linq;
-    using System.Text;
-    using System.Threading.Tasks;
     using Radar.Common.Config;
+    using System.Collections.Generic;
 
     public static class ConfigLoader
     {
-        //private readonly string ConfigPath = "";
-
         public static List<ConfigSetting> LoadConfig()
         {
             var configProfile = new List<ConfigSetting>();
