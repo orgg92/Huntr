@@ -24,7 +24,6 @@
             var commonDir = $"{Config.BaseDirectory}/Common/";
             var configDir = $"{commonDir}/Config/";
 
-
             if (!System.IO.Directory.Exists(commonDir))
                 System.IO.Directory.CreateDirectory(commonDir);
 
@@ -32,8 +31,16 @@
                 System.IO.Directory.CreateDirectory(configDir);
 
             if (!File.Exists(Config.ConfigPath))
+            {
                 File.Create(Config.ConfigPath);
+                CommonOperations.WriteToFile(Config.ConfigPath, CreateConfigTemplate());
+            }
 
+        }
+
+        public static string CreateConfigTemplate()
+        {
+            return "LOG_FILE_PATH=''\r\nMAC_LIST_PATH=''\r\nPORT_LIST_PATH=''\r\nFULL_PORT_SCAN=true\r\nCUSTOM_PORTS='1 2 80 8008'";
         }
     }
 }

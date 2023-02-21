@@ -30,28 +30,25 @@
                 Directory.CreateDirectory(configPath);
             }
 
-            using FileStream fs = File.OpenWrite(logPath);
-            byte[] buffer;
-
-            foreach (var str in CommonConsole.DeviceTableHeaderMessages)
+            using (FileStream fs = File.OpenWrite(logPath))
             {
-                buffer = ConvertStringToBytes(str + "|");
+                byte[] buffer;
+
+                foreach (var str in CommonConsole.DeviceTableHeaderMessages)
+                {
+                    buffer = CommonOperations.ConvertStringToBytes(str + "|");
+                    fs.Write(buffer, 0, buffer.Length);
+                }
+
+                buffer = CommonOperations.ConvertStringToBytes("\r\n");
                 fs.Write(buffer, 0, buffer.Length);
+
+                foreach (var str in textArray)
+                {
+                    buffer = CommonOperations.ConvertStringToBytes(str + "\r\n");
+                    fs.Write(buffer, 0, buffer.Length);
+                }
             }
-
-            buffer = ConvertStringToBytes("\r\n");
-            fs.Write(buffer, 0, buffer.Length);
-
-            foreach (var str in textArray)
-            {
-                buffer = ConvertStringToBytes(str + "\r\n");
-                fs.Write(buffer, 0, buffer.Length);
-            }
-        }
-
-        private byte[] ConvertStringToBytes(string str)
-        {
-            return Encoding.ASCII.GetBytes(str);
         }
 
         public string[] DisplayHostList(IEnumerable<Host> hosts)

@@ -1,5 +1,6 @@
 ﻿namespace Radar.Services
 {
+    using Radar.Common.Config;
     using Radar.Common.HostTools;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
@@ -17,10 +18,10 @@
             PortScanner = new PortScanner(_loggingService);
         }
 
-        public void ChooseService(IEnumerable<Host> hosts)
+        public void ChooseService(IEnumerable<Host> hosts, List<ConfigSetting> config)
         {
             var selectedHost = HostSelect(hosts);
-            PortScanner.CheckHost(selectedHost.IP);
+            PortScanner.CheckHost(selectedHost.IP, config);
 
         }
 

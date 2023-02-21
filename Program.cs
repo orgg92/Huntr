@@ -9,11 +9,13 @@ internal class Program
     private static void Main(string[] args)
     {
         var serviceProvider = new ServiceCollection()
+            .AddSingleton<IIPManipulationService, IPManipulationService>()
             .AddSingleton<INetworkScanner, NetworkScanner>()
             .AddSingleton<IHostToolsService, HostToolsService>()
             .AddSingleton<ILoggingService, LoggingService>()
             .BuildServiceProvider();
-
+        
+        var ipManipulationService = serviceProvider.GetService<IIPManipulationService>();
         var networkService = serviceProvider.GetService<INetworkScanner>();
         var toolsService = serviceProvider.GetService<IHostToolsService>();
         var loggingService = serviceProvider.GetService<ILoggingService>();

@@ -1,5 +1,6 @@
 ﻿namespace Radar.Common.HostTools
 {
+    using Radar.Common.Config;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
     using Radar.Services;
@@ -14,8 +15,7 @@
         private readonly ILoggingService _loggingService;
 
         private List<PortInfo> openPorts;
-
-        private List<PortInfo> commonPorts;
+        private List<PortInfo> targetPorts;
 
         public readonly static string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/";
         public readonly static string portInfoPath = $"{path}\\PortList.txt";
@@ -24,33 +24,39 @@
         {
             _loggingService = loggingService;
             openPorts = new List<PortInfo>();
-            commonPorts = new List<PortInfo>();
+            targetPorts = new List<PortInfo>();
 
             this.Name = "PortScanner";
         }
 
-        public bool CheckHost(string ipAddress)
+        public bool CheckHost(string ipAddress, List<ConfigSetting> config = null)
         {
+            if (!ConfigConverter.ConvertConfigToBool(config))
+            {
+                CreatePortList(config);
+            }
+            else
+            {
+                LoadPortList();
+            }
 
-            LoadPortList();
 
             var threadList = new List<Thread>();
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
-            var length = commonPorts.Any(x => !x.Attempted);
+            var length = targetPorts.Any(x => !x.Attempted);
 
-            for (int i = 0; i < commonPorts.Count(); i++)
+            for (int i = 0; i < targetPorts.Count(); i++)
             {
                 for (int t = 0; t < numberOfThreads; t++)
                 {
 
-                    if (i + t < commonPorts.Count())
+                    if (i + t < targetPorts.Count())
                     {
-                        threadList.Add(new Thread(() => ThreadedPortRequest(ipAddress, commonPorts[i + t])));
+                        threadList.Add(new Thread(() => ThreadedPortRequest(ipAddress, targetPorts[i + t])));
                         threadList[t].Start();
                         Thread.Sleep(150);
                     }
-
 
                 }
 
@@ -58,9 +64,7 @@
                 threadList.Clear();
 
                 i = i + numberOfThreads;
-
             }
-
 
             if (openPorts.Any())
             {
@@ -76,20 +80,29 @@
 
             foreach (var portInfo in ports)
             {
-                commonPorts.Add(new PortInfo
+                targetPorts.Add(new PortInfo
                 {
                     PortNum = int.Parse(portInfo.Split(CommonConsole.separator[0])[0]),
                     PortName = portInfo.Split(CommonConsole.separator[0])[1]
                 });
             }
+        }
 
+        private void CreatePortList(List<ConfigSetting> config)
+        {
+            var targets = ConfigConverter.ConvertToIntArray(config.Select(x => x).Where(y => y.PropertyName == "CUSTOM_PORTS").First().PropertyValue);
+
+            foreach (var port in targets)
+            {
+                targetPorts.Add(new PortInfo() { PortNum = port });
+            }
         }
 
         private void ThreadedPortRequest(string ipAddress, PortInfo portInfo)
         {
             portInfo.Attempted = true;
 
-            if (commonPorts.Any(x => !x.Attempted))
+            if (targetPorts.Any(x => !x.Attempted))
             {
                 using TcpClient tcpClient = new TcpClient();
                 ConsoleTools.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);

@@ -8,10 +8,19 @@ Both the network and port scanning are multithreaded optimizing the process.
 
 Supplicant files - MacList.txt and PortList.txt providing contextual information.  
 
+Config file should be created on run as filepath/Common/Config/config.ini.
+
+LOG_FILE_PATH - Location of the destination for the log file
+MAC_LIST_PATH - Location of the destination for the list of MAC addresses and vendors
+PORT_LIST_PATH - Location of the common ports list
+FULL_PORT_SCAN - This will enable full scanning from the list of ports or the list found in the CUSTOM_PORTS setting. Must be 'true' or 'false' (must be wrapped in single quotations).
+CUSTOM_PORTS= A space or comma separated list of integers, must be wrapped in single quotations, eg. '1 2 80 8008' 
+
+
 To do:  \
 [x] Save log files  \
+[-] Custom config  \
 [-] Host specific tools (check for open ports etc)  \
-[ ] Custom config  \
 [ ] Enhance scanning tools   \
 [ ] ?	
 

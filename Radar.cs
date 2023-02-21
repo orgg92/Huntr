@@ -27,12 +27,12 @@
         public void StartApp()
         {
             var config = BuildConfig();
-            var loggingText = RunPhase1();
+            var loggingText = RunPhase1(config);
             LoggingPrompt(loggingText);
-            RunPhase2();
+            RunPhase2(config);
         }
 
-        public string[] RunPhase1()
+        public string[] RunPhase1(List<ConfigSetting> config)
         {
             Hosts = Enumerable.Empty<Host>();
 
@@ -105,7 +105,7 @@
             }
         }
 
-        private void RunPhase2()
+        private void RunPhase2(List<ConfigSetting> config)
         {
             if (Config.EnableTools == true)
             {
@@ -114,7 +114,7 @@
 
             if (Config.EnableHostTools == true)
             {
-                _hostToolsService.ChooseService(Hosts);
+                _hostToolsService.ChooseService(Hosts, config);
             }
         }
 
