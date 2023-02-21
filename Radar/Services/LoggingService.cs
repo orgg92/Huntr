@@ -29,8 +29,6 @@
 
         public void LogToFile(string[] textArray)
         {
-            // ToDo
-
             if (!Directory.Exists(configPath))
             {
                 Directory.CreateDirectory(configPath);
@@ -64,7 +62,6 @@
 
         public string[] DisplayHostList(IEnumerable<Host> hosts)
         {
-
             ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
 
             ConsoleTools.WriteToConsole(CommonConsole.TableHeader, ConsoleColor.Red);
@@ -73,7 +70,6 @@
 
             for (int i = 0; i < hosts.Count(); i++)
             {
-                // create host for display to console
                 var host = hosts.Select(x => new Host() { HostName = x.HostName, MAC = x.MAC, IP = x.IP, Vendor = x.Vendor }).ElementAt(i);
                 var paddedHost = StringTableFormatter.PadPropertiesForDisplay(host, CommonConsole.DeviceTableHeaderMessages[4]);
 

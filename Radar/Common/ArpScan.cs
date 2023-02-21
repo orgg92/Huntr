@@ -18,12 +18,6 @@ namespace Radar.Common
 
         private static List<string> macList = new List<string>();
 
-        public ArpScan()
-        {
-
-
-        }
-
         public static Host Scan(string ipAddress)
         {
             int timeout = 2000;

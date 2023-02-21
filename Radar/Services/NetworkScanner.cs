@@ -115,22 +115,18 @@
             }
         }
 
-        public IEnumerable<Host> ScanNetwork(IPAddress ipAddress, string subnetMask) // host IP and subnet
+        public IEnumerable<Host> ScanNetwork(IPAddress ipAddress, string subnetMask)
         {
-            // Calculate number of hosts from subnet mask
             var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
             var segment = new IPSegment(ipAddress.ToString(), subnet.SubnetMask);
 
-            // Calculate first IP to scan based on input IP
             firstHost = segment.Hosts().First().ToIpString();
             lastHost = segment.Hosts().Last().ToIpString();
             targetIp = firstHost;
 
-            // Create list of threads 
             var threadList = new List<Thread>();
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
-            // inefficient but without this list, the multithreading process can skip hosts 
             for (int i = 0; i < subnet.NumberOfHosts; i++)
             {
                 hostList.Add(new AbstractHost { IP = targetIp });
@@ -139,11 +135,8 @@
 
             for (int i = 0; i < subnet.NumberOfHosts; i = i++)
             {
-
-                // Make host scanning quicker by multithreading 
                 for (int t = 0; t < numberOfThreads; t++)
                 {
-
                     if (targetIp != lastHost)
                     {
                         threadList.Add(new Thread(() => ThreadedPingRequest()));
@@ -152,7 +145,6 @@
                     }
                 }
 
-                // Increment by number of threads 
                 i = i + numberOfThreads;
                 threadList.WaitAll();
                 threadList.Clear();
@@ -187,7 +179,6 @@
         {
             TimeSpan ts = stopWatch.Elapsed;
 
-            // Format and display the TimeSpan value.
             string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
                 ts.Hours, ts.Minutes, ts.Seconds,
                 ts.Milliseconds / 10);
@@ -235,20 +226,16 @@
         {
             Host host;
 
-            // Scan host to get MAC address
             host = ArpScan.Scan(targetIp.ToString());
 
-            // All properties are null if ARP scan fails
             if (host.IP is not null)
             {
                 ConsoleTools.WriteToConsole($"Found host: {host.IP}", ConsoleColor.Green);
                 host.HostName = QueryDNS(host).HostName ?? "Unknown";
                 ActiveHosts.Add(host);
-
             }
 
             return true;
-
         }
     }
 }

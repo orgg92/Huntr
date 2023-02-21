@@ -35,9 +35,8 @@
         public bool CheckHost(string ipAddress)
         {
 
-            GetPorts();
+            LoadPortList();
 
-            // Create list of threads 
             var threadList = new List<Thread>();
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
@@ -45,7 +44,6 @@
 
             for (int i = 0; i < commonPorts.Count(); i++)
             {
-                // Make host scanning quicker by multithreading 
                 for (int t = 0; t < numberOfThreads; t++)
                 {
 
@@ -75,7 +73,7 @@
             return true;
         }
 
-        private void GetPorts()
+        private void LoadPortList()
         {
             var ports = FileReader.LoadListFromFile(portInfoPath);
 
