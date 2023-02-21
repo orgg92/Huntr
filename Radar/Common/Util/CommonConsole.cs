@@ -1,4 +1,4 @@
-﻿namespace Radar.Common
+﻿namespace Radar.Common.Util
 {
     public static class CommonConsole
     {
@@ -8,9 +8,9 @@
         public const string separator = "|";
         public const string InvalidSelection = "Invalid Selection";
 
-        public static string TableHeader = String.Empty;
+        public static string TableHeader = string.Empty;
 
-        public static readonly string[] PortTableHeaderMessages = { "  Port     ",  "   Service                                 " };
+        public static readonly string[] PortTableHeaderMessages = { "  Port     ", "   Service                                 " };
 
         // Used to display results - not pretty but looks okay in the console
         public static readonly string[] DeviceTableHeaderMessages = {

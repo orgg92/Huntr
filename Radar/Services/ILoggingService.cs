@@ -1,6 +1,5 @@
 ﻿namespace Radar.Services
 {
-    using Radar.Common.HostTools;
     using Radar.Common.NetworkModels;
     using System;
 

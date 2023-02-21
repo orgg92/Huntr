@@ -6,11 +6,8 @@
     using System;
     using System.Diagnostics;
     using System.Net;
-    using System.Net.NetworkInformation;
     using System.Net.Sockets;
     using System.Reflection;
-    using System.Security.Cryptography.X509Certificates;
-    using System.Text.RegularExpressions;
 
     public class PortScanner : HostTool
     {
@@ -79,9 +76,11 @@
 
             foreach (var portInfo in ports)
             {
-                commonPorts.Add(new PortInfo {
+                commonPorts.Add(new PortInfo
+                {
                     PortNum = int.Parse(portInfo.Split(CommonConsole.separator[0])[0]),
-                    PortName = portInfo.Split(CommonConsole.separator[0])[1] });
+                    PortName = portInfo.Split(CommonConsole.separator[0])[1]
+                });
             }
 
         }
@@ -92,24 +91,22 @@
 
             if (commonPorts.Any(x => !x.Attempted))
             {
-                using (TcpClient tcpClient = new TcpClient())
+                using TcpClient tcpClient = new TcpClient();
+                ConsoleTools.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
+
+                try
                 {
-                    ConsoleTools.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
+                    tcpClient.Connect(IPAddress.Parse(ipAddress), portInfo.PortNum);
 
-                    try
-                    {
-                        tcpClient.Connect(IPAddress.Parse(ipAddress), portInfo.PortNum);
+                    openPorts.Add(portInfo);
 
-                        openPorts.Add(portInfo);
+                    ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
 
-                        ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
+                }
+                catch (Exception e)
+                {
+                    ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
 
-                    }
-                    catch (Exception e)
-                    {
-                        ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
-
-                    }
                 }
             }
 

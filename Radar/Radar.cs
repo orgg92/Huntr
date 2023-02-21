@@ -1,8 +1,6 @@
 ﻿namespace Radar
 {
-    using Radar.Common;
     using Radar.Common.Config;
-    using Radar.Common.HostTools;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
     using Radar.Services;
@@ -14,7 +12,6 @@
         private readonly IHostToolsService _hostToolsService;
         private readonly ILoggingService _loggingService;
 
-        private HostTools HostTools { get; set; }
         private IEnumerable<Host> Hosts;
 
         public string[] CommandOptions = new string[] { "Network Scan" };
@@ -25,13 +22,11 @@
             _networkScanner = networkScanner;
             _hostToolsService = hostToolsService;
             _loggingService = loggingService;
-
-            HostTools = new HostTools();
         }
 
         public void StartApp()
         {
-           var loggingText = RunPhase1();
+            var loggingText = RunPhase1();
             LoggingPrompt(loggingText);
             RunPhase2();
         }

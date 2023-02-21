@@ -1,4 +1,4 @@
-﻿namespace Radar.Common
+﻿namespace Radar.Common.Util
 {
     using Radar.Common.NetworkModels;
     using System.Text;
@@ -41,7 +41,7 @@
 
             sb.Append(" ");
             sb.Append(hostname);
-            sb.Append(' ', (count - 3) - hostname.Length);
+            sb.Append(' ', count - 3 - hostname.Length);
 
             return sb.ToString();
         }

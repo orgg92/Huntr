@@ -18,7 +18,6 @@
                        firstHost = String.Empty,
                        lastHost = String.Empty;
 
-
         private SubnetsList _subnetList;
         private int interfaceCount;
 
@@ -28,8 +27,6 @@
         private string subnetMask;
         private string targetIp;
         private Stopwatch stopWatch;
-
-        private HostTracker hostTracker;
 
         private List<Host> ActiveHosts = new List<Host>();
         private List<AbstractHost> hostList = new List<AbstractHost>();
@@ -42,7 +39,6 @@
             _iPManipulationService = iPManipulationService;
 
             ifaces = NetworkInterface.GetAllNetworkInterfaces();
-            hostTracker = new HostTracker();
             stopWatch = new Stopwatch();
 
         }
