@@ -41,6 +41,8 @@
             ConsoleTools.WriteToConsole($"Select a host [1 - {hosts.Count()}] ", ConsoleColor.Yellow);
             var selectedHost = int.Parse(Console.ReadLine()) - 1;
 
+            ConsoleTools.WriteToConsole($"Selected: {hosts.ElementAt(selectedHost).IP}", ConsoleColor.Yellow);
+
             return hosts.ElementAt(selectedHost);
         }
 

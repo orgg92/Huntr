@@ -10,6 +10,7 @@
     using System.Threading.Tasks;
     using static Common.Util.ConsoleTools;
     using System.IO;
+    using Radar.Common.HostTools;
 
     public class LoggingService : ILoggingService
     {
@@ -18,7 +19,7 @@
 
         public LoggingService()
         {
-            CommonConsole.TableHeader = $"{CommonConsole.TableHeaderMessages[0]}|{CommonConsole.TableHeaderMessages[1]}|{CommonConsole.TableHeaderMessages[2]}|{CommonConsole.TableHeaderMessages[3]}|{CommonConsole.TableHeaderMessages[4]}|";
+            CommonConsole.TableHeader = $"{CommonConsole.DeviceTableHeaderMessages[0]}|{CommonConsole.DeviceTableHeaderMessages[1]}|{CommonConsole.DeviceTableHeaderMessages[2]}|{CommonConsole.DeviceTableHeaderMessages[3]}|{CommonConsole.DeviceTableHeaderMessages[4]}|";
         }
 
         public void LogToConsole(string message, ConsoleColor color)
@@ -28,8 +29,6 @@
 
         public void LogToFile(string[] textArray)
         {
-            // ToDo
-
             if (!Directory.Exists(configPath))
             {
                 Directory.CreateDirectory(configPath);
@@ -39,7 +38,7 @@
             {
                 byte[] buffer;
 
-                foreach (var str in CommonConsole.TableHeaderMessages)
+                foreach (var str in CommonConsole.DeviceTableHeaderMessages)
                 {
                     buffer = ConvertStringToBytes(str + "|");
                     fs.Write(buffer, 0, buffer.Length);
@@ -63,6 +62,7 @@
 
         public string[] DisplayHostList(IEnumerable<Host> hosts)
         {
+            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
 
             ConsoleTools.WriteToConsole(CommonConsole.TableHeader, ConsoleColor.Red);
 
@@ -70,9 +70,8 @@
 
             for (int i = 0; i < hosts.Count(); i++)
             {
-                // create host for display to console
                 var host = hosts.Select(x => new Host() { HostName = x.HostName, MAC = x.MAC, IP = x.IP, Vendor = x.Vendor }).ElementAt(i);
-                var paddedHost = StringTableFormatter.PadPropertiesForDisplay(host, CommonConsole.TableHeaderMessages[4]);
+                var paddedHost = StringTableFormatter.PadPropertiesForDisplay(host, CommonConsole.DeviceTableHeaderMessages[4]);
 
                 var formattedText = String.Format(
                         "{0,3} |{1}| {2,5} |{3}| {4} |",
@@ -89,6 +88,21 @@
             }
 
             return formattedTextArray;
+        }
+
+        public void DisplayPortList(List<PortInfo> openPorts)
+        {
+            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+
+            var formattedText = String.Format("|{0} | {1} |", CommonConsole.PortTableHeaderMessages[0], CommonConsole.PortTableHeaderMessages[1]);
+            ConsoleTools.WriteToConsole(formattedText, ConsoleColor.Yellow);
+
+            foreach(var port in openPorts)
+            {
+                var textString = String.Format("| {0,-10} | {1,-43} |", port.PortNum, port.PortName);
+                ConsoleTools.WriteToConsole(textString, ConsoleColor.Yellow);
+            }
+
         }
     }
 }

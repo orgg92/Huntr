@@ -85,6 +85,8 @@
                 ConsoleTools.WriteToConsole(CommonConsole.InvalidSelection, ConsoleColor.Red);
                 goto LoggingPrompt;
             }
+
+            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
         }
 
         public void InvalidSelection()

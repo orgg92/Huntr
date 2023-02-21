@@ -8,10 +8,14 @@
 
   <ItemGroup>
     <None Remove="Common\MacList.txt" />
+    <None Remove="Common\Resources\PortList.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Common\Resources\MacList.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\Resources\PortList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

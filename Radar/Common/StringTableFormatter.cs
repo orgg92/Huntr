@@ -3,8 +3,6 @@
     using Radar.Common.NetworkModels;
     using System.Text;
 
-    // Used to display the results of the network scan, a little bit inefficient but the trade off for convenience makes it worth while
-
     public class StringTableFormatter
     {
         private static int IPMaxLength = 15;
