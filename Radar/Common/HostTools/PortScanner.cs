@@ -37,30 +37,35 @@
 
             GetPorts();
 
-            var ports = Config.Config.Ports;
+            // Create list of threads 
+            var threadList = new List<Thread>();
+            var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
+
+            var length = commonPorts.Any(x => !x.Attempted);
 
             for (int i = 0; i < commonPorts.Count(); i++)
             {
-                using (TcpClient tcpClient = new TcpClient())
+                // Make host scanning quicker by multithreading 
+                for (int t = 0; t < numberOfThreads; t++)
                 {
-                    ConsoleTools.WriteToConsole($"Trying port {commonPorts[i].PortNum}", ConsoleColor.Yellow);
 
-                    try
+                    if (i + t < commonPorts.Count())
                     {
-                        tcpClient.Connect(IPAddress.Parse(ipAddress), commonPorts[i].PortNum);
-
-                        openPorts.Add(openPorts[i]);
-                        
-                        ConsoleTools.WriteToConsole($"Port {commonPorts[i].PortNum} open", ConsoleColor.Green);
+                        threadList.Add(new Thread(() => ThreadedPortRequest(ipAddress, commonPorts[i + t])));
+                        threadList[t].Start();
+                        Thread.Sleep(150);
                     }
-                    catch (Exception e)
-                    {
-                        ConsoleTools.WriteToConsole($"Port {commonPorts[i].PortNum} closed", ConsoleColor.Red);
 
-                    }
+
                 }
 
+                threadList.WaitAll();
+                threadList.Clear();
+
+                i = i + numberOfThreads;
+
             }
+
 
             if (openPorts.Any())
             {
@@ -83,11 +88,33 @@
 
         }
 
-        private void ThreadedPortRequest()
+        private void ThreadedPortRequest(string ipAddress, PortInfo portInfo)
         {
+            portInfo.Attempted = true;
+
+            if (commonPorts.Any(x => !x.Attempted))
+            {
+                using (TcpClient tcpClient = new TcpClient())
+                {
+                    ConsoleTools.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
+
+                    try
+                    {
+                        tcpClient.Connect(IPAddress.Parse(ipAddress), portInfo.PortNum);
+
+                        openPorts.Add(portInfo);
+
+                        ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
+
+                    }
+                    catch (Exception e)
+                    {
+                        ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
+
+                    }
+                }
+            }
 
         }
-
-
     }
 }

@@ -10,6 +10,7 @@
     {
         public int PortNum { get; set; }
         public string PortName { get; set; }
+        public bool Attempted { get; set; }
 
         public PortInfo()
         {

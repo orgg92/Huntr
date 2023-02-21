@@ -98,11 +98,15 @@
         {
             ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
 
-            var formattedText = String.Format("{0} | {1}", CommonConsole.PortTableHeaderMessages[0], CommonConsole.PortTableHeaderMessages[1]);
+            var formattedText = String.Format("|{0} | {1} |", CommonConsole.PortTableHeaderMessages[0], CommonConsole.PortTableHeaderMessages[1]);
             ConsoleTools.WriteToConsole(formattedText, ConsoleColor.Yellow);
 
+            foreach(var port in openPorts)
+            {
+                var textString = String.Format("| {0,-10} | {1,-43} |", port.PortNum, port.PortName);
+                ConsoleTools.WriteToConsole(textString, ConsoleColor.Yellow);
+            }
 
-            var portsConcat = String.Empty;
         }
     }
 }
