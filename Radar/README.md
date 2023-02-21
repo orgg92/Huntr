@@ -13,9 +13,9 @@ To do:  \
 [x] Host specific tools (check for open ports etc)  \
 [ ] Custom config  \
 [ ] Enhance scanning tools   \
-[ ] ?	\
+[ ] ?	
 
 Branch note:	\
 master: fully working features	\
 beta: experimental changes	\
-x.x.x: here be dragons	\
+x.x.x: here be dragons	
