@@ -6,16 +6,16 @@ Following the network scan, the user can select a host and scan the ports listed
 
 Both the network and port scanning are multithreaded optimizing the process.
 
-Supplicant files - MacList.txt and PortList.txt providing contextual information.
+Supplicant files - MacList.txt and PortList.txt providing contextual information.  
 
-To do:
-[x] Save log files
-[x] Host specific tools (check for open ports etc)
-[ ] Custom config
-[ ] Enhance scanning tools 
-[ ] ?
+To do:  \
+[x] Save log files  \
+[x] Host specific tools (check for open ports etc)  \
+[ ] Custom config  \
+[ ] Enhance scanning tools   \
+[ ] ?	\
 
-Branch note:
-master: fully working features
-beta: experimental changes
-x.x.x: here be dragons
+Branch note:	\
+master: fully working features	\
+beta: experimental changes	\
+x.x.x: here be dragons	\
