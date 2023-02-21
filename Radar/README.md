@@ -1,16 +1,19 @@
-﻿The program scans your system and returns a complete list of interfaces.
+﻿This program will scan your system for network interfaces and prompt a user to select which one to scan.
 
-The prompt asks the user to select which network to scan in which you must type one of the corresponding integer values.
+Based on the subnet mask, the network scan will run the whole range with the option to dump to a log file. 
 
-The program will then proceed to scan the network for hosts, also using ARP to obtain the MAC address and device info for each host on the network.
+Following the network scan, the user can select a host and scan the ports listed in the provided text file (this file can be added to based on user requirements).
 
-The number of hosts is determined from the subnet, a larger subnet could take some time to complete a full scan - though your typical network will probably be a /24 network.
+Both the network and port scanning are multithreaded optimizing the process.
+
+Supplicant files - MacList.txt and PortList.txt providing contextual information.
 
 To do:
-- Save log files
-- Custom config
-- Enhance scanning tools 
-- Host specific tools (check for open ports etc)
+[x] Save log files
+[x] Host specific tools (check for open ports etc)
+[ ] Custom config
+[ ] Enhance scanning tools 
+[ ] ?
 
 Branch note:
 master: fully working features

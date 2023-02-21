@@ -1,16 +1,12 @@
 ﻿namespace Radar.Services
 {
     using Radar.Common.NetworkModels;
-    using Radar.Common;
     using Radar.Common.Util;
     using System;
     using System.Collections.Generic;
+    using System.IO;
     using System.Linq;
     using System.Text;
-    using System.Threading.Tasks;
-    using static Common.Util.ConsoleTools;
-    using System.IO;
-    using Radar.Common.HostTools;
 
     public class LoggingService : ILoggingService
     {
@@ -34,24 +30,22 @@
                 Directory.CreateDirectory(configPath);
             }
 
-            using (FileStream fs = File.OpenWrite(logPath))
+            using FileStream fs = File.OpenWrite(logPath);
+            byte[] buffer;
+
+            foreach (var str in CommonConsole.DeviceTableHeaderMessages)
             {
-                byte[] buffer;
-
-                foreach (var str in CommonConsole.DeviceTableHeaderMessages)
-                {
-                    buffer = ConvertStringToBytes(str + "|");
-                    fs.Write(buffer, 0, buffer.Length);
-                }
-
-                buffer = ConvertStringToBytes("\r\n");
+                buffer = ConvertStringToBytes(str + "|");
                 fs.Write(buffer, 0, buffer.Length);
+            }
 
-                foreach(var str in textArray)
-                {
-                    buffer = ConvertStringToBytes(str + "\r\n");
-                    fs.Write(buffer, 0, buffer.Length);
-                }
+            buffer = ConvertStringToBytes("\r\n");
+            fs.Write(buffer, 0, buffer.Length);
+
+            foreach (var str in textArray)
+            {
+                buffer = ConvertStringToBytes(str + "\r\n");
+                fs.Write(buffer, 0, buffer.Length);
             }
         }
 
@@ -97,7 +91,7 @@
             var formattedText = String.Format("|{0} | {1} |", CommonConsole.PortTableHeaderMessages[0], CommonConsole.PortTableHeaderMessages[1]);
             ConsoleTools.WriteToConsole(formattedText, ConsoleColor.Yellow);
 
-            foreach(var port in openPorts)
+            foreach (var port in openPorts)
             {
                 var textString = String.Format("| {0,-10} | {1,-43} |", port.PortNum, port.PortName);
                 ConsoleTools.WriteToConsole(textString, ConsoleColor.Yellow);

@@ -1,7 +1,5 @@
 ﻿namespace Radar.Services
 {
-    using Radar.Common;
-    using Radar.Common.Config;
     using Radar.Common.HostTools;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
@@ -12,16 +10,6 @@
         private readonly ILoggingService _loggingService;
 
         private PortScanner PortScanner;
-
-        private const string IP = "IP",
-                             MAC = "MAC",
-                             Vendor = "Vendor",
-                             No = "#";
-
-        private const int IP_Length = 15,
-                          Vendor_Length = 64;
-
-
 
         public HostToolsService(ILoggingService loggingService)
         {
