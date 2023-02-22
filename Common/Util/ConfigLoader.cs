@@ -25,10 +25,12 @@
             var configDir = $"{commonDir}/Config/";
 
             if (!System.IO.Directory.Exists(commonDir))
+            {
                 System.IO.Directory.CreateDirectory(commonDir);
 
-            if (!System.IO.Directory.Exists(configDir))
-                System.IO.Directory.CreateDirectory(configDir);
+                if (!System.IO.Directory.Exists(configDir))
+                    System.IO.Directory.CreateDirectory(configDir);
+            }
 
             if (!File.Exists(Config.ConfigPath))
             {
@@ -40,7 +42,7 @@
 
         public static string CreateConfigTemplate()
         {
-            return "LOG_FILE_PATH=''\r\nMAC_LIST_PATH=''\r\nPORT_LIST_PATH=''\r\nFULL_PORT_SCAN=true\r\nCUSTOM_PORTS='1 2 80 8008'";
+            return "LOG_FILE_PATH='C:/Test/Dir/File.txt'\r\nMAC_LIST_PATH='C:/Test/Dir/File.txt'\r\nPORT_LIST_PATH='C:/Test/Dir/File.txt'\r\nFULL_PORT_SCAN='true'\r\nCUSTOM_PORTS='1 2 80 8008'";
         }
     }
 }

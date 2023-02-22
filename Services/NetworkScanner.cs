@@ -62,7 +62,7 @@
                             .Select(i => i.Address)
                             .First();
                 subnetMask = _iPManipulationService.ReturnSubnetmask(ipAddress);
-                ConsoleTools.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
+                ConsoleTools.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Green);
 
                 var bytes = ipAddress.GetAddressBytes();
                 var binarySubnetMask = String.Join(".", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
@@ -101,7 +101,7 @@
                             .Select(i => i.Address)
                             .First();
 
-                ConsoleTools.WriteToConsole($"{iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Red);
+                ConsoleTools.WriteToConsole($"Selected: {iface.Name} on {ipAddress}/{subnetMask} ", ConsoleColor.Green);
 
                 return subnetMask.ToString();
             }

@@ -120,6 +120,7 @@
 
         public List<ConfigSetting> BuildConfig()
         {
+            ConsoleTools.WriteToConsole("Loading config...", ConsoleColor.Yellow);
             return ConfigLoader.LoadConfig();
         }
 
