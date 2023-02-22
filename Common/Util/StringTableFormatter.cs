@@ -1,18 +1,17 @@
-﻿namespace Radar.Common
+﻿namespace Radar.Common.Util
 {
     using Radar.Common.NetworkModels;
     using System.Text;
 
-    // Used to display the results of the network scan, a little bit inefficient but the trade off for convenience makes it worth while
-
     public class StringTableFormatter
     {
+        private static int IPMaxLength = 15;
+
         public static string PadIP(string IP, StringBuilder sb)
         {
             sb.Clear();
 
             var count = IP.Length;
-            var IPMaxLength = 15;
 
             sb.Append("  ");
             sb.Append(IP);
@@ -42,7 +41,7 @@
 
             sb.Append(" ");
             sb.Append(hostname);
-            sb.Append(' ', (count - 3) - hostname.Length);
+            sb.Append(' ', count - 3 - hostname.Length);
 
             return sb.ToString();
         }

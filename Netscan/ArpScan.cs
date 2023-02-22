@@ -1,6 +1,6 @@
 ﻿// Some code borrowed and refactored from giuliocomi @ github: https://github.com/giuliocomi/arp-scanner
 
-namespace Radar.Common
+namespace Radar.Common.Netscan
 {
     using ArpLookup;
     using Radar.Common.NetworkModels;
@@ -16,21 +16,13 @@ namespace Radar.Common
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         private static extern int SendARP(int DestIP, int SrcIP, byte[] pMacAddr, ref uint PhyAddrLen);
 
-        private static uint macAddrLen = (uint)new byte[6].Length;
-        private const string separator = "|";
         private static List<string> macList = new List<string>();
-
-        public ArpScan()
-        {
-
-
-        }
 
         public static Host Scan(string ipAddress)
         {
             int timeout = 2000;
             Host host = new Host();
-            macList = LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/MacList.txt");
+            macList = FileReader.LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/MacList.txt");
             host = CheckStatus(ipAddress, timeout);
 
             return host;
@@ -79,7 +71,7 @@ namespace Radar.Common
                     Match found = Regex.Match(entry, pattern);
                     if (found.Success)
                     {
-                        return found.Value.Split(separator[0])[1];
+                        return found.Value.Split(CommonConsole.separator[0])[1];
                     }
                 }
             }
@@ -104,24 +96,6 @@ namespace Radar.Common
             }
 
             return result;
-        }
-
-        private static List<string> LoadListFromFile(string filename)
-        {
-            List<string> list = new List<string>();
-
-            try
-            {
-                foreach (var ipAddress in File.ReadAllLines(filename))
-                    list.Add(ipAddress.Trim());
-            }
-            catch (Exception e)
-            {
-                ConsoleTools.WriteToConsole("Error reading file.", ConsoleColor.Red);
-
-                return new List<string>();
-            }
-            return list;
         }
 
     }
