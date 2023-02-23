@@ -49,6 +49,7 @@
 
             ConsoleTools.WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
             ConsoleTools.WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
+            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
 
             int i = 1;
 

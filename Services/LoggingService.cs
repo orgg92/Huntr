@@ -6,7 +6,6 @@
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using System.Text;
 
     public class LoggingService : ILoggingService
     {
@@ -30,24 +29,22 @@
                 Directory.CreateDirectory(configPath);
             }
 
-            using (FileStream fs = File.OpenWrite(logPath))
+            using FileStream fs = File.OpenWrite(logPath);
+            byte[] buffer;
+
+            foreach (var str in CommonConsole.DeviceTableHeaderMessages)
             {
-                byte[] buffer;
-
-                foreach (var str in CommonConsole.DeviceTableHeaderMessages)
-                {
-                    buffer = CommonOperations.ConvertStringToBytes(str + "|");
-                    fs.Write(buffer, 0, buffer.Length);
-                }
-
-                buffer = CommonOperations.ConvertStringToBytes("\r\n");
+                buffer = CommonOperations.ConvertStringToBytes(str + "|");
                 fs.Write(buffer, 0, buffer.Length);
+            }
 
-                foreach (var str in textArray)
-                {
-                    buffer = CommonOperations.ConvertStringToBytes(str + "\r\n");
-                    fs.Write(buffer, 0, buffer.Length);
-                }
+            buffer = CommonOperations.ConvertStringToBytes("\r\n");
+            fs.Write(buffer, 0, buffer.Length);
+
+            foreach (var str in textArray)
+            {
+                buffer = CommonOperations.ConvertStringToBytes(str + "\r\n");
+                fs.Write(buffer, 0, buffer.Length);
             }
         }
 

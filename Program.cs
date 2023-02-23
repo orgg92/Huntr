@@ -14,7 +14,7 @@ internal class Program
             .AddSingleton<IHostToolsService, HostToolsService>()
             .AddSingleton<ILoggingService, LoggingService>()
             .BuildServiceProvider();
-        
+
         var ipManipulationService = serviceProvider.GetService<IIPManipulationService>();
         var networkService = serviceProvider.GetService<INetworkScanner>();
         var toolsService = serviceProvider.GetService<IHostToolsService>();

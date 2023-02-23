@@ -18,10 +18,10 @@
             PortScanner = new PortScanner(_loggingService);
         }
 
-        public void ChooseService(IEnumerable<Host> hosts, List<ConfigSetting> config)
+        public void ChooseService(IEnumerable<Host> hosts)
         {
             var selectedHost = HostSelect(hosts);
-            PortScanner.CheckHost(selectedHost.IP, config);
+            PortScanner.CheckHost(selectedHost.IP);
 
         }
 
