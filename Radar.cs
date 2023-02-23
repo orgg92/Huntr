@@ -30,6 +30,7 @@
             var loggingText = RunPhase1();
             LoggingPrompt(loggingText);
             RunPhase2();
+
         }
 
         public string[] RunPhase1()

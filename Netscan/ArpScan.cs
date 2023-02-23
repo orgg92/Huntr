@@ -7,7 +7,6 @@ namespace Radar.Common.Netscan
     using Radar.Common.Util;
     using System.Net;
     using System.Net.NetworkInformation;
-    using System.Reflection;
     using System.Runtime.InteropServices;
     using System.Text.RegularExpressions;
 
@@ -16,13 +15,10 @@ namespace Radar.Common.Netscan
         [DllImport("iphlpapi.dll", ExactSpelling = true)]
         private static extern int SendARP(int DestIP, int SrcIP, byte[] pMacAddr, ref uint PhyAddrLen);
 
-        private static List<string> macList = new List<string>();
-
         public static Host Scan(string ipAddress)
         {
             int timeout = 2000;
             Host host = new Host();
-            macList = FileReader.LoadListFromFile($"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/MacList.txt");
             host = CheckStatus(ipAddress, timeout);
 
             return host;
@@ -66,7 +62,7 @@ namespace Radar.Common.Netscan
 
             try
             {
-                foreach (var entry in macList)
+                foreach (var entry in Config.Config.MAC_LIST)
                 {
                     Match found = Regex.Match(entry, pattern);
                     if (found.Success)

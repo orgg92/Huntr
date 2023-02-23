@@ -17,8 +17,7 @@
         private List<PortInfo> openPorts;
         private List<PortInfo> targetPorts;
 
-        public readonly static string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/";
-        public readonly static string portInfoPath = $"{path}\\PortList.txt";
+        public readonly static string portInfoPath = Config.PORT_LIST_PATH;
 
         public PortScanner(ILoggingService loggingService)
         {
@@ -39,7 +38,6 @@
             {
                 LoadPortList();
             }
-
 
             var threadList = new List<Thread>();
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
@@ -76,7 +74,7 @@
 
         private void LoadPortList()
         {
-            var ports = FileReader.LoadListFromFile(portInfoPath);
+            var ports = CommonOperations.LoadListFromFile(portInfoPath);
 
             foreach (var portInfo in ports)
             {

@@ -4,7 +4,7 @@
     {
         // misc variables used for displaying to console
 
-        public const string spacer = "***********************************************************";
+        public const string spacer = "************************************************************************************************************************";
         public const string separator = "|";
         public const string InvalidSelection = "Invalid Selection";
 

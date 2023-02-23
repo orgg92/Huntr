@@ -51,5 +51,10 @@
 
             }
         }
+
+        private static void SendARPRequest(Host targetHost)
+        {
+
+        }
     }
 }

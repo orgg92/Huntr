@@ -1,5 +1,6 @@
 ﻿namespace Radar.Common.Config
 {
+    using Radar.Common.NetworkModels;
     using System.Collections.Generic;
     using System.Linq;
 
@@ -22,6 +23,11 @@
 
             return settings.Select(x => int.Parse(x));
 
+        }
+
+        public static IEnumerable<string> ConvertToStringArray(string configSetting)
+        {
+            return configSetting.Split(' ');
         }
     }
 }

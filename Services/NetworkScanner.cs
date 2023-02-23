@@ -1,5 +1,6 @@
 ﻿namespace Radar.Services
 {
+    using Radar.Common.Config;
     using Radar.Common.Netscan;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
@@ -8,7 +9,6 @@
     using System.Net;
     using System.Net.NetworkInformation;
     using System.Net.Sockets;
-
 
     public class NetworkScanner : INetworkScanner
     {
@@ -20,6 +20,7 @@
 
         private SubnetsList _subnetList;
         private int interfaceCount;
+        private int threadCount;
 
         private NetworkInterface[] ifaces;
         private UnicastIPAddressInformationCollection ipAddresses;
@@ -30,6 +31,8 @@
 
         private List<Host> ActiveHosts = new List<Host>();
         private List<AbstractHost> hostList = new List<AbstractHost>();
+        private List<Thread> threadList = new List<Thread>();
+
 
         private readonly IIPManipulationService _iPManipulationService;
 
@@ -114,37 +117,14 @@
 
         public IEnumerable<Host> ScanNetwork(IPAddress ipAddress, string subnetMask)
         {
-            var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
-            var segment = new IPSegment(ipAddress.ToString(), subnet.SubnetMask);
+            threadCount = Process.GetCurrentProcess().Threads.Count;
 
-            firstHost = segment.Hosts().First().ToIpString();
-            lastHost = segment.Hosts().Last().ToIpString();
-            targetIp = firstHost;
-
-            var threadList = new List<Thread>();
-            var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
-
-            for (int i = 0; i < subnet.NumberOfHosts; i++)
+            if (Config.CUSTOM_IP_SCAN)
             {
-                hostList.Add(new AbstractHost { IP = targetIp });
-                this.targetIp = IncrementIpAddress(targetIp.ToString());
-            }
-
-            for (int i = 0; i < subnet.NumberOfHosts; i = i++)
+                ExecuteCustomScan();
+            } else
             {
-                for (int t = 0; t < numberOfThreads; t++)
-                {
-                    if (targetIp != lastHost)
-                    {
-                        threadList.Add(new Thread(() => ThreadedPingRequest()));
-                        threadList[t].Start();
-                        Thread.Sleep(150);
-                    }
-                }
-
-                i = i + numberOfThreads;
-                threadList.WaitAll();
-                threadList.Clear();
+                ExecuteFullScan();
             }
 
             stopWatch.Stop();
@@ -171,20 +151,59 @@
 
         }
 
-
-        private string FormatStopwatch(Stopwatch stopwatch)
+        private void ExecuteFullScan()
         {
-            TimeSpan ts = stopWatch.Elapsed;
+            var subnet = _subnetList.ReturnSubnetInfo(subnetMask);
+            var segment = new IPSegment(ipAddress.ToString(), subnet.SubnetMask);
 
-            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
-                ts.Hours, ts.Minutes, ts.Seconds,
-                ts.Milliseconds / 10);
+            firstHost = segment.Hosts().First().ToIpString();
+            lastHost = segment.Hosts().Last().ToIpString();
+            targetIp = firstHost;
 
-            return elapsedTime;
+            for (int i = 0; i < subnet.NumberOfHosts; i++)
+            {
+                hostList.Add(new AbstractHost { IP = targetIp });
+                this.targetIp = IncrementIpAddress(targetIp.ToString());
+            }
+
+            ThreadedPingRequest(subnet.NumberOfHosts);
+
+
         }
 
-        public void ThreadedPingRequest()
+        private void ExecuteCustomScan()
         {
+            foreach (var ip in Config.CUSTOM_IP_ADDRESSES)
+            {
+                hostList.Add(new AbstractHost { IP = ip });
+            }
+
+            ThreadedPingRequest(Config.CUSTOM_IP_ADDRESSES.Count());
+        }
+
+        private void ThreadedPingRequest(int loopCount)
+        {
+            for (int i = 0; i < loopCount; i = i++)
+            {
+                for (int t = 0; t < threadCount; t++)
+                {
+                    if (targetIp != lastHost)
+                    {
+                        threadList.Add(new Thread(() => PingRequest()));
+                        threadList[t].Start();
+                        Thread.Sleep(150);
+                    }
+                }
+
+                i = i + threadCount;
+                threadList.WaitAll();
+                threadList.Clear();
+            }
+        }
+
+        public void PingRequest()
+        {
+
             if (hostList.Any(x => x.PingAttempted is false))
             {
                 var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
@@ -233,6 +252,17 @@
             }
 
             return true;
+        }
+
+        private string FormatStopwatch(Stopwatch stopwatch)
+        {
+            TimeSpan ts = stopWatch.Elapsed;
+
+            string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+                ts.Hours, ts.Minutes, ts.Seconds,
+                ts.Milliseconds / 10);
+
+            return elapsedTime;
         }
     }
 }

@@ -9,7 +9,7 @@
         {
             var configProfile = new List<ConfigSetting>();
             CreateFileIfNotExists();
-            FileReader.LoadListFromFile(Config.ConfigPath).ForEach(x => configProfile.Add(BuildSetting(x)));
+            CommonOperations.LoadListFromFile(Config.ConfigPath).ForEach(x => configProfile.Add(BuildSetting(x)));
             return configProfile;
         }
 
@@ -42,12 +42,13 @@
 
         public static string CreateConfigTemplate()
         {
-            return  "CUSTOM_PORT_SCAN=false\r\n" +
+            return "CUSTOM_PORT_SCAN=false\r\n" +
                     "CUSTOM_IP_SCAN=false\r\n" +
                     "LOG_FILE_PATH='C:/Test/Dir/File.txt'\r\n" +
                     "MAC_LIST_PATH='C:/Test/Dir/File.txt'\r\n" +
                     "PORT_LIST_PATH='C:/Test/Dir/File.txt'\r\n" +
-                    "CUSTOM_PORTS='1 2 80 8008'";
+                    "CUSTOM_PORTS='1 2 80 8008'" +
+                    "CUSTOM_IP_ADDRESSES=''";
         }
     }
 }
