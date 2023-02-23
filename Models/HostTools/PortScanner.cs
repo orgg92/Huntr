@@ -29,11 +29,11 @@
             this.Name = "PortScanner";
         }
 
-        public bool CheckHost(string ipAddress, List<ConfigSetting> config = null)
+        public bool CheckHost(string ipAddress)
         {
-            if (!ConfigConverter.ConvertConfigToBool(config))
+            if (!Config.CUSTOM_PORT_SCAN)
             {
-                CreatePortList(config);
+                CreatePortList();
             }
             else
             {
@@ -88,13 +88,14 @@
             }
         }
 
-        private void CreatePortList(List<ConfigSetting> config)
+        private void CreatePortList()
         {
-            var targets = ConfigConverter.ConvertToIntArray(config.Select(x => x).Where(y => y.PropertyName == "CUSTOM_PORTS").First().PropertyValue);
-
-            foreach (var port in targets)
+            if (Config.CUSTOM_PORT_SCAN && Config.CUSTOM_PORTS.Any())
             {
-                targetPorts.Add(new PortInfo() { PortNum = port });
+                foreach(var port in Config.CUSTOM_PORTS)
+                {
+                    targetPorts.Add(new PortInfo { PortNum = port });
+                }
             }
         }
 

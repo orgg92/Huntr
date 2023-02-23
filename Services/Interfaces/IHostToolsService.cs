@@ -5,6 +5,6 @@
 
     public interface IHostToolsService
     {
-        void ChooseService(IEnumerable<Host> hosts, List<ConfigSetting> config);
+        void ChooseService(IEnumerable<Host> hosts);
     }
 }

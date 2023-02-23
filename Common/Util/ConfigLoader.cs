@@ -42,7 +42,12 @@
 
         public static string CreateConfigTemplate()
         {
-            return "LOG_FILE_PATH='C:/Test/Dir/File.txt'\r\nMAC_LIST_PATH='C:/Test/Dir/File.txt'\r\nPORT_LIST_PATH='C:/Test/Dir/File.txt'\r\nFULL_PORT_SCAN='true'\r\nCUSTOM_PORTS='1 2 80 8008'";
+            return  "CUSTOM_PORT_SCAN=false\r\n" +
+                    "CUSTOM_IP_SCAN=false\r\n" +
+                    "LOG_FILE_PATH='C:/Test/Dir/File.txt'\r\n" +
+                    "MAC_LIST_PATH='C:/Test/Dir/File.txt'\r\n" +
+                    "PORT_LIST_PATH='C:/Test/Dir/File.txt'\r\n" +
+                    "CUSTOM_PORTS='1 2 80 8008'";
         }
     }
 }
