@@ -14,10 +14,9 @@
 
         private IEnumerable<Host> Hosts;
 
-        public string[] CommandOptions = new string[] { "Network Scan" };
         public const string FeatureSelection = "Select one of the following options...";
 
-        public RadarScanner(IIPManipulationService iPManipulationService, INetworkScanner networkScanner, IHostToolsService hostToolsService, ILoggingService loggingService)
+        public RadarScanner(INetworkScanner networkScanner, IHostToolsService hostToolsService, ILoggingService loggingService)
         {
             _networkScanner = networkScanner;
             _hostToolsService = hostToolsService;
@@ -26,9 +25,11 @@
 
         public void StartApp()
         {
+            Config.BuildConfig();
             var loggingText = RunPhase1();
             LoggingPrompt(loggingText);
             RunPhase2();
+
         }
 
         public string[] RunPhase1()
@@ -38,8 +39,8 @@
         Input:
             var ifaces = _networkScanner.FindInterfaces();
 
-            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
-            ConsoleTools.WriteToConsole("Select an interface to scan on...", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole("Select an interface to scan on...", ConsoleColor.Yellow);
 
             var input = Console.ReadLine();
 
@@ -63,30 +64,30 @@
         private void LoggingPrompt(string[] textArray)
         {
         LoggingPrompt:
-            ConsoleTools.WriteToConsole("Write to logfile? [Y/N]", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole("Write to logfile? [Y/N]", ConsoleColor.Yellow);
             var logging = Console.ReadLine();
 
             if (logging.ToLower() == "y")
             {
-                ConsoleTools.WriteToConsole("Writing to logfile...", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole("Writing to logfile...", ConsoleColor.Yellow);
                 _loggingService.LogToFile(textArray);
             }
             else if (logging.ToLower() == "n")
             {
-                ConsoleTools.WriteToConsole("Skipping log file", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole("Skipping log file", ConsoleColor.Yellow);
             }
             else
             {
-                ConsoleTools.WriteToConsole(CommonConsole.InvalidSelection, ConsoleColor.Red);
+                CommonConsole.WriteToConsole(CommonConsole.InvalidSelection, ConsoleColor.Red);
                 goto LoggingPrompt;
             }
 
-            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
         }
 
         public void InvalidSelection()
         {
-            ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
+            CommonConsole.WriteToConsole("Invalid selection", ConsoleColor.Red);
         }
 
         public bool ValidateInput(string input, int interfaceCount)
@@ -106,16 +107,14 @@
 
         private void RunPhase2()
         {
-            if (Config.EnableTools == true)
-            {
-
-            }
-
-            if (Config.EnableHostTools == true)
-            {
-                _hostToolsService.ChooseService(Hosts);
-            }
+            _hostToolsService.ChooseService(Hosts);
         }
+
+        //public List<ConfigSetting> BuildConfig()
+        //{
+        //    CommonConsole.WriteToConsole("Loading config...", ConsoleColor.Yellow);
+        //    Config.BuildConfig();
+        //}
 
     }
 }

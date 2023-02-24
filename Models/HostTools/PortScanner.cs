@@ -1,5 +1,6 @@
 ﻿namespace Radar.Common.HostTools
 {
+    using Radar.Common.Config;
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
     using Radar.Services;
@@ -14,43 +15,46 @@
         private readonly ILoggingService _loggingService;
 
         private List<PortInfo> openPorts;
+        private List<PortInfo> targetPorts;
 
-        private List<PortInfo> commonPorts;
-
-        public readonly static string path = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/";
-        public readonly static string portInfoPath = $"{path}\\PortList.txt";
+        public readonly static string portInfoPath = Config.PORT_LIST_PATH;
 
         public PortScanner(ILoggingService loggingService)
         {
             _loggingService = loggingService;
             openPorts = new List<PortInfo>();
-            commonPorts = new List<PortInfo>();
+            targetPorts = new List<PortInfo>();
 
             this.Name = "PortScanner";
         }
 
         public bool CheckHost(string ipAddress)
         {
-
-            LoadPortList();
+            if (!Config.CUSTOM_PORT_SCAN)
+            {
+                CreatePortList();
+            }
+            else
+            {
+                LoadPortList();
+            }
 
             var threadList = new List<Thread>();
             var numberOfThreads = Process.GetCurrentProcess().Threads.Count;
 
-            var length = commonPorts.Any(x => !x.Attempted);
+            var length = targetPorts.Any(x => !x.Attempted);
 
-            for (int i = 0; i < commonPorts.Count(); i++)
+            for (int i = 0; i < targetPorts.Count(); i++)
             {
                 for (int t = 0; t < numberOfThreads; t++)
                 {
 
-                    if (i + t < commonPorts.Count())
+                    if (i + t < targetPorts.Count())
                     {
-                        threadList.Add(new Thread(() => ThreadedPortRequest(ipAddress, commonPorts[i + t])));
+                        threadList.Add(new Thread(() => ThreadedPortRequest(ipAddress, targetPorts[i + t])));
                         threadList[t].Start();
                         Thread.Sleep(150);
                     }
-
 
                 }
 
@@ -58,9 +62,7 @@
                 threadList.Clear();
 
                 i = i + numberOfThreads;
-
             }
-
 
             if (openPorts.Any())
             {
@@ -72,27 +74,37 @@
 
         private void LoadPortList()
         {
-            var ports = FileReader.LoadListFromFile(portInfoPath);
+            var ports = CommonOperations.LoadListFromFile(portInfoPath);
 
             foreach (var portInfo in ports)
             {
-                commonPorts.Add(new PortInfo
+                targetPorts.Add(new PortInfo
                 {
                     PortNum = int.Parse(portInfo.Split(CommonConsole.separator[0])[0]),
                     PortName = portInfo.Split(CommonConsole.separator[0])[1]
                 });
             }
+        }
 
+        private void CreatePortList()
+        {
+            if (Config.CUSTOM_PORT_SCAN && Config.CUSTOM_PORTS.Any())
+            {
+                foreach(var port in Config.CUSTOM_PORTS)
+                {
+                    targetPorts.Add(new PortInfo { PortNum = port });
+                }
+            }
         }
 
         private void ThreadedPortRequest(string ipAddress, PortInfo portInfo)
         {
             portInfo.Attempted = true;
 
-            if (commonPorts.Any(x => !x.Attempted))
+            if (targetPorts.Any(x => !x.Attempted))
             {
                 using TcpClient tcpClient = new TcpClient();
-                ConsoleTools.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
 
                 try
                 {
@@ -100,12 +112,13 @@
 
                     openPorts.Add(portInfo);
 
-                    ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
+                    CommonConsole.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
 
                 }
                 catch (Exception e)
                 {
-                    ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
+                    Console.ResetColor();
+                    CommonConsole.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
 
                 }
             }
