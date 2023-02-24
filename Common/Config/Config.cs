@@ -31,8 +31,11 @@
 
         public static void BuildConfig()
         {
-            // Windows only
-            Console.SetWindowSize(120, 30);
+            if (System.Runtime.InteropServices.RuntimeInformation.OSDescription.Contains("Windows"))
+            {
+                // Windows only
+                Console.SetWindowSize(120, 30);
+            }
 
             ConfigSettings = new List<ConfigSetting>();
 
