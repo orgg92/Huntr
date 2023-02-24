@@ -14,8 +14,9 @@ Config file should be created on run as filepath/Common/Config/config.ini.
 LOG_FILE_PATH - Location of the destination for the log file \
 MAC_LIST_PATH - Location of the destination for the list of MAC addresses and vendors \
 PORT_LIST_PATH - Location of the common ports list \
-FULL_PORT_SCAN - This will enable full scanning from the list of ports or the list found in the CUSTOM_PORTS setting. Must be true or false
-CUSTOM_PORTS= A space or comma separated list of integers eg. 1 2 80 8008 \
+FULL_PORT_SCAN - This will enable full scanning from the list of ports or the list found in the CUSTOM_PORTS setting. Must be true or false \
+CUSTOM_PORTS - A space or comma separated list of integers eg. 1 2 80 8008 \
+CUSTOM_IP_ADDRESSES - A space or comma separated list of IP addresses
 
 
 To do:  \
