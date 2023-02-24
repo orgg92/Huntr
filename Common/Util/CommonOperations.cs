@@ -29,7 +29,7 @@
             }
             catch (Exception e)
             {
-                ConsoleTools.WriteToConsole("Error reading file.", ConsoleColor.Red);
+                CommonConsole.WriteToConsole("Error reading file.", ConsoleColor.Red);
 
                 return new List<string>();
             }

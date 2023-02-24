@@ -43,16 +43,15 @@
 
             ifaces = NetworkInterface.GetAllNetworkInterfaces();
             stopWatch = new Stopwatch();
-
         }
 
         public NetworkInterface[] FindInterfaces()
         {
             interfaceCount = ifaces.Count();
 
-            ConsoleTools.WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
-            ConsoleTools.WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
-            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(findingInterfacesMsg, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(foundInterfacesMsg.Replace("{0}", interfaceCount.ToString()), ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
 
             int i = 1;
 
@@ -66,7 +65,7 @@
                             .Select(i => i.Address)
                             .First();
                 subnetMask = _iPManipulationService.ReturnSubnetmask(ipAddress);
-                ConsoleTools.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Green);
+                CommonConsole.WriteToConsole($"({i}) {iface.Name}: {ipAddress} / {subnetMask} ", ConsoleColor.Green);
 
                 var bytes = ipAddress.GetAddressBytes();
                 var binarySubnetMask = String.Join(".", bytes.Select(b => Convert.ToString(b, 2).PadLeft(8, '0')));
@@ -81,9 +80,9 @@
         {
             stopWatch.Start();
 
-            ConsoleTools.WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(findingNetworkHostsMsg, ConsoleColor.Yellow);
 
-            var subnetMask = ScanInterfaces(userInput);
+            subnetMask = ScanInterfaces(userInput);
             var hosts = ScanNetwork(ipAddress, subnetMask.ToString());
 
             return ActiveHosts.Select(x => x).Distinct().ToArray();
@@ -95,9 +94,8 @@
 
             try
             {
-
                 ipAddresses = iface.GetIPProperties().UnicastAddresses;
-                var subnetMask = ipAddresses.Where(x => x.IPv4Mask.ToString() != "0.0.0.0").Select(x => x.IPv4Mask).First();
+                var ipv4Mask = ipAddresses.Where(x => x.IPv4Mask.ToString() != "0.0.0.0").Select(x => x.IPv4Mask).First();
 
                 ipAddress = ipAddresses
                             .Select(x => x)
@@ -105,9 +103,9 @@
                             .Select(i => i.Address)
                             .First();
 
-                ConsoleTools.WriteToConsole($"Selected: {iface.Name} on {ipAddress}/{subnetMask} ", ConsoleColor.Green);
+                CommonConsole.WriteToConsole($"Selected: {iface.Name} on {ipAddress}/{ipv4Mask} ", ConsoleColor.Green);
 
-                return subnetMask.ToString();
+                return ipv4Mask.ToString();
             }
             catch (Exception e)
             {
@@ -131,8 +129,8 @@
 
             var elapsedTime = FormatStopwatch(stopWatch);
 
-            ConsoleTools.WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
-            ConsoleTools.WriteToConsole($"Scan completed in: {elapsedTime}", ConsoleColor.Green);
+            CommonConsole.WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole($"Scan completed in: {elapsedTime}", ConsoleColor.Green);
 
             return ActiveHosts;
 
@@ -191,7 +189,7 @@
                     {
                         threadList.Add(new Thread(() => PingRequest()));
                         threadList[t].Start();
-                        Thread.Sleep(150);
+                        Thread.Sleep(200);
                     }
                 }
 
@@ -209,7 +207,7 @@
                 var targetHost = hostList.Select(x => x).Where(x => x.PingAttempted is false).First();
                 targetIp = targetHost.IP.ToString();
                 hostList.Remove(targetHost);
-                ConsoleTools.WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole($"Trying host: {targetIp}", ConsoleColor.Yellow);
 
                 var result = PingHost(IPAddress.Parse(targetIp));
             }
@@ -246,7 +244,7 @@
 
             if (host.IP is not null)
             {
-                ConsoleTools.WriteToConsole($"Found host: {host.IP}", ConsoleColor.Green);
+                CommonConsole.WriteToConsole($"Found host: {host.IP}", ConsoleColor.Green);
                 host.HostName = QueryDNS(host).HostName ?? "Unknown";
                 ActiveHosts.Add(host);
             }

@@ -14,7 +14,6 @@
 
         private IEnumerable<Host> Hosts;
 
-        public string[] CommandOptions = new string[] { "Network Scan" };
         public const string FeatureSelection = "Select one of the following options...";
 
         public RadarScanner(INetworkScanner networkScanner, IHostToolsService hostToolsService, ILoggingService loggingService)
@@ -40,8 +39,8 @@
         Input:
             var ifaces = _networkScanner.FindInterfaces();
 
-            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
-            ConsoleTools.WriteToConsole("Select an interface to scan on...", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole("Select an interface to scan on...", ConsoleColor.Yellow);
 
             var input = Console.ReadLine();
 
@@ -65,30 +64,30 @@
         private void LoggingPrompt(string[] textArray)
         {
         LoggingPrompt:
-            ConsoleTools.WriteToConsole("Write to logfile? [Y/N]", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole("Write to logfile? [Y/N]", ConsoleColor.Yellow);
             var logging = Console.ReadLine();
 
             if (logging.ToLower() == "y")
             {
-                ConsoleTools.WriteToConsole("Writing to logfile...", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole("Writing to logfile...", ConsoleColor.Yellow);
                 _loggingService.LogToFile(textArray);
             }
             else if (logging.ToLower() == "n")
             {
-                ConsoleTools.WriteToConsole("Skipping log file", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole("Skipping log file", ConsoleColor.Yellow);
             }
             else
             {
-                ConsoleTools.WriteToConsole(CommonConsole.InvalidSelection, ConsoleColor.Red);
+                CommonConsole.WriteToConsole(CommonConsole.InvalidSelection, ConsoleColor.Red);
                 goto LoggingPrompt;
             }
 
-            ConsoleTools.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
         }
 
         public void InvalidSelection()
         {
-            ConsoleTools.WriteToConsole("Invalid selection", ConsoleColor.Red);
+            CommonConsole.WriteToConsole("Invalid selection", ConsoleColor.Red);
         }
 
         public bool ValidateInput(string input, int interfaceCount)
@@ -111,11 +110,11 @@
             _hostToolsService.ChooseService(Hosts);
         }
 
-        public List<ConfigSetting> BuildConfig()
-        {
-            ConsoleTools.WriteToConsole("Loading config...", ConsoleColor.Yellow);
-            return ConfigLoader.LoadConfig();
-        }
+        //public List<ConfigSetting> BuildConfig()
+        //{
+        //    CommonConsole.WriteToConsole("Loading config...", ConsoleColor.Yellow);
+        //    Config.BuildConfig();
+        //}
 
     }
 }

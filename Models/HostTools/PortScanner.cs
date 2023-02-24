@@ -104,7 +104,7 @@
             if (targetPorts.Any(x => !x.Attempted))
             {
                 using TcpClient tcpClient = new TcpClient();
-                ConsoleTools.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
+                CommonConsole.WriteToConsole($"Trying port {portInfo.PortNum}", ConsoleColor.Yellow);
 
                 try
                 {
@@ -112,12 +112,13 @@
 
                     openPorts.Add(portInfo);
 
-                    ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
+                    CommonConsole.WriteToConsole($"Port {portInfo.PortNum} open", ConsoleColor.Green);
 
                 }
                 catch (Exception e)
                 {
-                    ConsoleTools.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
+                    Console.ResetColor();
+                    CommonConsole.WriteToConsole($"Port {portInfo.PortNum} closed", ConsoleColor.Red);
 
                 }
             }

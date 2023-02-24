@@ -73,7 +73,7 @@ namespace Radar.Common.Netscan
             }
             catch (Exception e)
             {
-                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red);
+                CommonConsole.WriteToConsole(e.ToString(), ConsoleColor.Red);
             }
             return "Unknown";
         }
@@ -88,7 +88,7 @@ namespace Radar.Common.Netscan
             }
             catch (Exception e)
             {
-                ConsoleTools.WriteToConsole(e.ToString(), ConsoleColor.Red);
+                CommonConsole.WriteToConsole(e.ToString(), ConsoleColor.Red);
             }
 
             return result;

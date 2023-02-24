@@ -5,6 +5,7 @@
     using Radar.Common.NetworkModels;
     using Radar.Common.Util;
     using Radar.Services.Interfaces;
+    using System.Linq.Expressions;
 
     public class HostToolsService : IHostToolsService
     {
@@ -20,24 +21,32 @@
 
         public void ChooseService(IEnumerable<Host> hosts)
         {
-            var selectedHost = HostSelect(hosts);
-            PortScanner.CheckHost(selectedHost.IP);
+            try
+            {
+                var selectedHost = HostSelect(hosts);
+                PortScanner.CheckHost(selectedHost.IP);
+            }
+            catch (Exception e)
+            {
+                CommonConsole.WriteToConsole("Error loading custom IP config...", ConsoleColor.Red);
+                throw e;
+            }
 
         }
 
         private Host HostSelect(IEnumerable<Host> hosts)
         {
-            ConsoleTools.WriteToConsole($"Select a host [1 - {hosts.Count()}] ", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole($"Select a host [1 - {hosts.Count()}] ", ConsoleColor.Yellow);
             var selectedHost = int.Parse(Console.ReadLine()) - 1;
 
-            ConsoleTools.WriteToConsole($"Selected: {hosts.ElementAt(selectedHost).IP}", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole($"Selected: {hosts.ElementAt(selectedHost).IP}", ConsoleColor.Yellow);
 
             return hosts.ElementAt(selectedHost);
         }
 
         private void ToolSelector()
         {
-            ConsoleTools.WriteToConsole("Select a tool...", ConsoleColor.Yellow);
+            CommonConsole.WriteToConsole("Select a tool...", ConsoleColor.Yellow);
             var input = int.Parse(Console.ReadLine()) - 1;
 
 
