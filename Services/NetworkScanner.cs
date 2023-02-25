@@ -127,7 +127,7 @@
 
             stopWatch.Stop();
 
-            var elapsedTime = FormatStopwatch(stopWatch);
+            var elapsedTime = FormatStopwatch();
 
             CommonConsole.WriteToConsole($"Found {ActiveHosts.Count()} hosts...", ConsoleColor.Yellow);
             CommonConsole.WriteToConsole($"Scan completed in: {elapsedTime}", ConsoleColor.Green);
@@ -242,17 +242,18 @@
 
             host = ArpScan.Scan(targetIp.ToString());
 
-            if (host.IP is not null)
+            if (host.MAC is not null)
             {
                 CommonConsole.WriteToConsole($"Found host: {host.IP}", ConsoleColor.Green);
                 host.HostName = QueryDNS(host).HostName ?? "Unknown";
                 ActiveHosts.Add(host);
+                return true;
             }
 
-            return true;
+            return false;
         }
 
-        private string FormatStopwatch(Stopwatch stopwatch)
+        private string FormatStopwatch()
         {
             TimeSpan ts = stopWatch.Elapsed;
 
