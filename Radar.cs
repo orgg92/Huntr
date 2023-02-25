@@ -94,7 +94,7 @@
         {
             if (int.TryParse(input, out var parsedInput))
             {
-                if (parsedInput < interfaceCount)
+                if (parsedInput - 1 < interfaceCount && parsedInput - 1 > -1)
                     return true;
 
                 return false;
