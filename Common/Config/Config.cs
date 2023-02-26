@@ -28,10 +28,13 @@
         public static IEnumerable<string> CUSTOM_IP_ADDRESSES { get; set; }
 
         public static List<ConfigSetting> ConfigSettings { get; set; }
+        public static bool WIN_HOST_OS { get; set; }
 
         public static void BuildConfig()
         {
-            if (System.Runtime.InteropServices.RuntimeInformation.OSDescription.Contains("Windows"))
+            WIN_HOST_OS = GetOS();
+
+            if (WIN_HOST_OS)
             {
                 // Windows only
                 Console.SetWindowSize(120, 30);
@@ -61,6 +64,14 @@
             LoadMACList();
 
             ConfigSettings.Clear();
+        }
+
+        public static bool GetOS()
+        {
+            if (System.Runtime.InteropServices.RuntimeInformation.OSDescription.Contains("Windows"))
+                return true;
+
+            return false;
         }
 
         public static void LoadMACList()
