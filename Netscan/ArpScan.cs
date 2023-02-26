@@ -35,7 +35,7 @@ namespace Radar.Common.Netscan
         {
             PhysicalAddress mac = Arp.Lookup(IPAddress.Parse(ipString));
 
-            if (mac is not null)
+            if (mac is not null && mac.ToString() is not "000000000000")
             {
                 var paddedMAC = PadMACString(mac?.ToString());
 
