@@ -5,6 +5,8 @@
     using Radar.Common.Util;
     using Radar.Services;
     using Radar.Services.Interfaces;
+    using System.Net.NetworkInformation;
+    using System.Net.Sockets;
 
     public class RadarScanner
     {
@@ -45,7 +47,7 @@
             var input = Console.ReadLine();
 
             // not ideal but prevents any other selections
-            if (!ValidateInput(input, ifaces.Length))
+            if (!ValidateInput(input, ifaces.Length) && !IsAPIPA(int.Parse(input), ifaces))
             {
                 InvalidSelection();
                 goto Input;
@@ -59,6 +61,19 @@
 
             return formattedText;
 
+        }
+
+        private bool IsAPIPA(int input, NetworkInterface[] interfaces)
+        {
+            if (interfaces[input - 1].GetIPProperties().UnicastAddresses.Select(x => x)
+                            .Where(u => u.Address.AddressFamily == AddressFamily.InterNetwork)
+                            .Select(i => i.Address)
+                            .First().MapToIPv4().ToString().StartsWith("169.254."))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         private void LoggingPrompt(string[] textArray)

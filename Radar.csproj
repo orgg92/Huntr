@@ -9,11 +9,15 @@
   <ItemGroup>
     <None Remove="Common\Config\config.ini" />
     <None Remove="Common\MacList.txt" />
+    <None Remove="Common\Resources\CredentialsList.txt" />
     <None Remove="Common\Resources\PortList.txt" />
   </ItemGroup>
 
   <ItemGroup>
     <Content Include="Common\Config\config.ini">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Common\Resources\CredentialsList.txt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Common\Resources\MacList.txt">
@@ -26,7 +30,10 @@
 
   <ItemGroup>
     <PackageReference Include="ArpLookup" Version="2.0.3" />
+    <PackageReference Include="chilkat-x64" Version="9.5.0.93" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
+    <PackageReference Include="MediatR" Version="10.0.1" />
+    <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
   </ItemGroup>
 

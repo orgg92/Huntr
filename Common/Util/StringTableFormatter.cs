@@ -24,7 +24,7 @@
         {
             sb.Clear();
 
-            var count = 50;
+            var count = 40;
 
             sb.Append(" ");
             sb.Append(vendor);
@@ -41,7 +41,7 @@
 
             sb.Append(" ");
             sb.Append(hostname);
-            sb.Append(' ', count - 3 - hostname.Length);
+            sb.Append(' ', count - (hostname.Length + 3));
 
             return sb.ToString();
         }

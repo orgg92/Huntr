@@ -43,7 +43,7 @@
 
                 if (reply.Status == IPStatus.Success)
                 {
-                    //ConsoleTools.WriteToConsole(Thread.CurrentThread.ManagedThreadId.ToString(), ConsoleColor.Yellow);
+                    //CommonConsole.WriteToConsole(Thread.CurrentThread.ManagedThreadId.ToString(), ConsoleColor.Yellow);
                 }
             }
             catch (Exception e)
