@@ -125,11 +125,6 @@
             _hostToolsService.ChooseService(Hosts);
         }
 
-        //public List<ConfigSetting> BuildConfig()
-        //{
-        //    CommonConsole.WriteToConsole("Loading config...", ConsoleColor.Yellow);
-        //    Config.BuildConfig();
-        //}
 
     }
 }

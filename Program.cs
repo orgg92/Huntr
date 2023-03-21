@@ -16,14 +16,12 @@ internal class Program
             .AddSingleton<INetworkScanner, NetworkScanner>()
             .AddSingleton<IHostToolsService, HostToolsService>()
             .AddSingleton<ILoggingService, LoggingService>()
-            //.AddSingleton<ISSHService, SSHService>()
             .BuildServiceProvider();
 
         var ipManipulationService = serviceProvider.GetService<IIPManipulationService>();
         var networkService = serviceProvider.GetService<INetworkScanner>();
         var toolsService = serviceProvider.GetService<IHostToolsService>();
         var loggingService = serviceProvider.GetService<ILoggingService>();
-        var sshService = serviceProvider.GetService<ISSHService>();
 
         var radar = new RadarScanner(networkService, toolsService, loggingService);
         radar.StartApp();
