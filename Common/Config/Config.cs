@@ -18,11 +18,15 @@
 
         public static string ConfigPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Config/config.ini";
         public static string BaseDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        public static string CredentialsPath = $"{Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)}/Common/Resources/CredentialsList.txt";
         public static bool CUSTOM_PORT_SCAN { get; set; }
         public static bool CUSTOM_IP_SCAN { get; set; }
+        public static bool CUSTOM_CREDENTIALS { get; set; }
         public static string LOG_FILE_PATH { get; set; }
         public static string MAC_LIST_PATH { get; set; }
         public static string PORT_LIST_PATH { get; set; }
+        public static string CUSTOM_CREDENTIALS_PATH { get; set; }
+        public static string CREDENTIALS_FILE_PATH { get; set; }
         public static IEnumerable<int> CUSTOM_PORTS { get; set; }
         public static IEnumerable<string> MAC_LIST { get; set; }
         public static IEnumerable<string> CUSTOM_IP_ADDRESSES { get; set; }
@@ -44,7 +48,7 @@
 
             CommonConsole.WriteToConsole("Loading config...", ConsoleColor.Yellow);
 
-            LoadConfig();
+            LoadConfigFile();
             var CPS = RetrieveValue(ConfigSettings, "CUSTOM_PORT_SCAN");
             var CIS = RetrieveValue(ConfigSettings, "CUSTOM_IP_SCAN");
             var LFP = RetrieveValue(ConfigSettings, "LOG_FILE_PATH");
@@ -84,7 +88,7 @@
             return config.Where(y => y.PropertyName == propertyName).First();
         }
 
-        public static bool LoadConfig()
+        public static bool LoadConfigFile()
         {
             try
             {
@@ -140,7 +144,7 @@
 
         public static string CreateConfigTemplate()
         {
-            return  "CUSTOM_PORT_SCAN=false\r\n" +
+            return "CUSTOM_PORT_SCAN=false\r\n" +
                     "CUSTOM_IP_SCAN=false\r\n" +
                     "LOG_FILE_PATH='C:/Test/Dir/File.txt'\r\n" +
                     "MAC_LIST_PATH='C:/Test/Dir/File.txt'\r\n" +

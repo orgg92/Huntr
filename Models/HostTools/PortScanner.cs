@@ -30,7 +30,7 @@
 
         public bool CheckHost(string ipAddress)
         {
-            if (!Config.CUSTOM_PORT_SCAN)
+            if (Config.CUSTOM_PORT_SCAN)
             {
                 CreatePortList();
             }

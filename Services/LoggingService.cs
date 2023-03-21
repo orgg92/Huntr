@@ -75,6 +75,8 @@
 
             }
 
+            CommonConsole.WriteToConsole(CommonConsole.spacer, ConsoleColor.Yellow);
+
             return formattedTextArray;
         }
 

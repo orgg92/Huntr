@@ -24,11 +24,12 @@
             try
             {
                 var selectedHost = HostSelect(hosts);
-                PortScanner.CheckHost(selectedHost.IP);
+
+                PortScanner.CheckHost(selectedHost.IP);                        
             }
             catch (Exception e)
             {
-                CommonConsole.WriteToConsole("Error loading custom IP config...", ConsoleColor.Red);
+                CommonConsole.WriteToConsole("Error loading custom config...", ConsoleColor.Red);
                 throw e;
             }
 
@@ -42,14 +43,6 @@
             CommonConsole.WriteToConsole($"Selected: {hosts.ElementAt(selectedHost).IP}", ConsoleColor.Yellow);
 
             return hosts.ElementAt(selectedHost);
-        }
-
-        private void ToolSelector()
-        {
-            CommonConsole.WriteToConsole("Select a tool...", ConsoleColor.Yellow);
-            var input = int.Parse(Console.ReadLine()) - 1;
-
-
         }
     }
 }

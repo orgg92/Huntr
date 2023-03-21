@@ -3,12 +3,15 @@ using Microsoft.Extensions.DependencyInjection;
 using Radar;
 using Radar.Services;
 using Radar.Services.Interfaces;
+using System.Reflection;
+using MediatR;
 
 internal class Program
 {
     private static void Main(string[] args)
     {
         var serviceProvider = new ServiceCollection()
+            .AddMediatR(Assembly.GetExecutingAssembly())
             .AddSingleton<IIPManipulationService, IPManipulationService>()
             .AddSingleton<INetworkScanner, NetworkScanner>()
             .AddSingleton<IHostToolsService, HostToolsService>()

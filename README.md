@@ -1,4 +1,4 @@
-﻿This program will scan your system for network interfaces and prompt a user to select which one to scan.
+﻿This program will scan your system for network interfaces and prompt a user to select which one to scan. There are no installation requirements except for being able to build the project.
 
 Based on the subnet mask, the network scan will run the whole range with the option to dump to a log file (default is project directory/Logs/log.txt). 
 
@@ -18,6 +18,11 @@ FULL_PORT_SCAN - This will enable full scanning from the list of ports or the li
 CUSTOM_PORTS - A space or comma separated list of integers eg. 1 2 80 8008 \
 CUSTOM_IP_ADDRESSES - A space or comma separated list of IP addresses
 
+Pre-requisites/installation instructions \
+- For Linux when cloning you will need the dotnet runtime and sdk (6.0). Build the project in the root directory.
+
+Disclaimer \
+Do not use this tool on any unauthorized networks. It is intended for discovery and network auditing.
 
 To do:  \
 [x] Save log files  \

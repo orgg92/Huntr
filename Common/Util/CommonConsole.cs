@@ -7,6 +7,7 @@
         // misc variables used for displaying to console
 
         public const string spacer = "************************************************************************************************************************";
+        public const string headingspacer = "________________________________________________________________________________________________________________________";
         public const string separator = "|";
         public const string InvalidSelection = "Invalid Selection";
 
@@ -19,8 +20,8 @@
             "  # ",
             "       IP        ",
             "         MAC       ",
-            "                      Vendor                       ",
-            "         Hostname       "
+            "                 Vendor                  ",
+            "             Hostname             "
         };
 
         public static void WriteToConsole(string message, ConsoleColor color)
@@ -29,6 +30,11 @@
             Console.ForegroundColor = color;
             Console.WriteLine(message);
             Console.ResetColor();
+        }
+
+        public static bool ValidateUserInput(string input)
+        {
+            return input.ToLower().Contains("y") || input.ToLower().Contains("n");
         }
     }
 }
